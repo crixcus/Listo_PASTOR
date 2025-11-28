@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -167,6 +167,75 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5894032628324069364, guid: 8fe8ef1083ca2474ea5433c62212c95e, type: 3}
+--- !u!1001 &33405202
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 72.391
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 72.391
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 72.391
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.7618529
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.1862249
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.3729687
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
+      propertyPath: m_Name
+      value: Washing Machine new
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dafbdd317df78e245bd40ed0e551fd49, type: 3}
 --- !u!64 &42121532
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12622,3 +12691,4 @@ SceneRoots:
   - {fileID: 1937777497}
   - {fileID: 527692523}
   - {fileID: 1494776408}
+  - {fileID: 33405202}
