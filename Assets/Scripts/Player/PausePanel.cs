@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Unity.UI;
+using UnityEngine.UI;
 using TMPro;
 
 public class PausePanel : MonoBehaviour
@@ -71,8 +71,14 @@ public class PausePanel : MonoBehaviour
         settingsPanel.SetActive(true);
     }
 
+    public void SettingsClose()
+    {
+        settingsPanel.SetActive(false);
+    }
+
     public void MainMenu()
     {
-        SceneManager.LoadScene("Main Menu");
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 }

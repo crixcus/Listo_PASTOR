@@ -18,6 +18,7 @@ public class MenuButtons : MonoBehaviour
 
     public void Start()
     {
+
         epMenu.SetActive(false);
         ep1Title.SetActive(false);
         ep2Title.SetActive(false);
