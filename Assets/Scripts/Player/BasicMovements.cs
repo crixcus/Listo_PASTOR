@@ -9,6 +9,7 @@ public class BasicMovements : MonoBehaviour
     [SerializeField] private float sprintSpeed = 8f;
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float gravity = -9.81f;
+    [SerializeField]private Animator animator;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -26,6 +27,7 @@ public class BasicMovements : MonoBehaviour
     private InputAction jumpAction;
     private InputAction sprintAction;
     private InputAction lookAction;
+    
 
     private Vector2 moveInput;
     private Vector3 velocity;
@@ -74,6 +76,8 @@ public class BasicMovements : MonoBehaviour
         {
             velocity.y = -2f;
         }
+        bool isMoving = moveInput.magnitude > 0.1f;
+        animator.SetBool("isMoving", isMoving);
 
         // Read input
         moveInput = moveAction.ReadValue<Vector2>();
