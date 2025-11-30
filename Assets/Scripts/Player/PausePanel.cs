@@ -7,6 +7,7 @@ public class PausePanel : MonoBehaviour
 {
     [Header("UI Element")]
     public GameObject pausePanel;
+    public GameObject settingsPanel;
 
     private bool isPaused = false;
 
@@ -16,6 +17,7 @@ public class PausePanel : MonoBehaviour
         {
             pausePanel.SetActive(false);
         }
+        settingsPanel.SetActive(false);
     }
 
     void Update()
@@ -24,6 +26,7 @@ public class PausePanel : MonoBehaviour
         {
             if (isPaused)
             {
+                settingsPanel.SetActive(false);
                 ResumeGame();
             }
             else
@@ -61,6 +64,11 @@ public class PausePanel : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void SettingsPanel()
+    {
+        settingsPanel.SetActive(true);
     }
 
     public void MainMenu()
