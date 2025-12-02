@@ -54,7 +54,7 @@ public class MenuButtons : MonoBehaviour
         ep1Title.SetActive(true);
         ep1Bg.SetActive(true);
         playButton.SetActive(true);
-        playSceneName = "Level 1";
+        playSceneName = "INTRO";
 
         ep2Title.SetActive(false);
         ep2Bg.SetActive(false);
