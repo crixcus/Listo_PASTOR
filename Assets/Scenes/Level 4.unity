@@ -1130,6 +1130,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6219848842421530281, guid: 3c367e6deb3357246a89ac9934298e4f, type: 3}
+--- !u!114 &59707526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59707519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7799e5162fa16854889d9b949dd84ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Bag
 --- !u!4 &60310435 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3886073133861910623, guid: edcbb1ffd37a176419fb130f6161c3af, type: 3}
@@ -2439,6 +2452,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &196931308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196931291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7799e5162fa16854889d9b949dd84ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Flashlight
 --- !u!1001 &200612131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5967,6 +5993,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   riseSpeed: 0.4
   maxHeight: 4.1
+  notificationInterval: 10
+  warningHeightThreshold: 2
 --- !u!114 &488931490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6872,6 +6900,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a6f8c4ca56a997242a573614514815fa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 196931304}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a6f8c4ca56a997242a573614514815fa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 196931308}
   m_SourcePrefab: {fileID: 100100000, guid: a6f8c4ca56a997242a573614514815fa, type: 3}
 --- !u!1001 &542960892
 PrefabInstance:
@@ -7969,7 +8000,7 @@ GameObject:
   - component: {fileID: 653375360}
   - component: {fileID: 653375359}
   m_Layer: 5
-  m_Name: HUD (1)
+  m_Name: HUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9073,6 +9104,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3c367e6deb3357246a89ac9934298e4f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 59707520}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3c367e6deb3357246a89ac9934298e4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 59707526}
   m_SourcePrefab: {fileID: 100100000, guid: 3c367e6deb3357246a89ac9934298e4f, type: 3}
 --- !u!1001 &714416327
 PrefabInstance:
@@ -13823,6 +13857,19 @@ MonoBehaviour:
   animator: {fileID: 1082034075}
   notifText: {fileID: 1204134381}
   displayTime: 5
+  notificationMessages:
+  - type: 0
+    message: Item collected!
+  - type: 1
+    message: Level up!
+  - type: 2
+    message: Quest completed!
+  - type: 3
+    message: Health is low!
+  - type: 4
+    message: Out of ammo!
+  - type: 5
+    message: Objective complete!
 --- !u!1001 &1082397264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15436,7 +15483,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Secure the furniture upstairs!
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -18127,6 +18174,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   riseSpeed: 1
   maxHeight: 6
+  notificationInterval: 10
+  warningHeightThreshold: 2
 --- !u!114 &1419673445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18694,6 +18743,19 @@ MonoBehaviour:
   waterObject: {fileID: 488931487}
   floatSpeed: 1
   floatChangeInterval: 2
+--- !u!114 &1435279804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435279789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7799e5162fa16854889d9b949dd84ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Radio
 --- !u!1001 &1439287479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20554,6 +20616,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e98b826591b904a45abe65748aec12bc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1435279799}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e98b826591b904a45abe65748aec12bc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1435279804}
   m_SourcePrefab: {fileID: 100100000, guid: e98b826591b904a45abe65748aec12bc, type: 3}
 --- !u!1 &1574189748
 GameObject:
@@ -24161,6 +24226,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1921383260}
   m_CullTransparentMesh: 1
+--- !u!1 &1924824390
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1924824392}
+  - component: {fileID: 1924824391}
+  m_Layer: 0
+  m_Name: Scenario Handler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1924824391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1924824390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 296e7ba52f42bfb479651c951bb67ad1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1924824392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1924824390}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1925737656
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27723,3 +27832,4 @@ SceneRoots:
   - {fileID: 1629314383}
   - {fileID: 1679480316}
   - {fileID: 211417694}
+  - {fileID: 1924824392}
