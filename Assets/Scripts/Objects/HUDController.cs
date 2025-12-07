@@ -12,11 +12,11 @@ public class HUDController : MonoBehaviour
         instance = this;
     }
 
-    [SerializeField] TMP_Text interactionText; // fixed SerializedField -> SerializeField
+    [SerializeField] TMP_Text interactionText; 
 
     public void EnableInteractionText(string text)
     {
-        interactionText.text = text + " (F)"; // added missing semicolon and space
+        interactionText.text = text + " (F)"; 
         interactionText.gameObject.SetActive(true);
     }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PickupItem : MonoBehaviour
+public class ItemData : MonoBehaviour
 {
     public string itemName = "DefaultItem";
 }

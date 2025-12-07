@@ -29,13 +29,14 @@ public class PlayerPickup : MonoBehaviour
 
         if (hits.Length > 0)
         {
-            PickupItem item = hits[0].GetComponent<PickupItem>();
+            ItemData item = hits[0].GetComponent<ItemData>();
 
             if (item != null)
             {
                 AddToInventory(item.itemName);
                 Destroy(item.gameObject);
-                Debug.Log("Picked up: " + item.itemName);
+                NotificationSystem.Instance.ShowNotification(
+                $"You have Collected: {item.itemName}!");
             }
         }
     }
