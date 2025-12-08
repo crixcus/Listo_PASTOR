@@ -69,6 +69,7 @@ public class PausePanel : MonoBehaviour
     public void SettingsPanel()
     {
         settingsPanel.SetActive(true);
+        Time.timeScale = 0f; //pause
     }
 
     public void SettingsClose()
