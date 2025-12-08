@@ -7,27 +7,16 @@ public class MenuButtons : MonoBehaviour
     private string playSceneName = "GameScene";
 
     public GameObject epMenu;
-    public GameObject ep1Title;
-    public GameObject ep2Title;
-    public GameObject ep3Title;
-    public GameObject ep1Bg;
-    public GameObject ep2Bg;
-    public GameObject ep3Bg;
-    public GameObject playButton;
     public GameObject mainMenu;
+    public GameObject settingsButton;
+    public GameObject credsButton;
 
     public void Start()
     {
-
         epMenu.SetActive(false);
-        ep1Title.SetActive(false);
-        ep2Title.SetActive(false);
-        ep3Title.SetActive(false);
-        ep1Bg.SetActive(false);
-        ep2Bg.SetActive(false);
-        ep3Bg.SetActive(false);
-        playButton.SetActive(false);
         mainMenu.SetActive(true);
+        settingsButton.SetActive(false);
+        credsButton.SetActive(false);
     }
 
     public void PlayButton()
@@ -38,52 +27,41 @@ public class MenuButtons : MonoBehaviour
 
     public void BackButton()
     {
-        ep1Title.SetActive(false);
-        ep2Title.SetActive(false);
-        ep3Title.SetActive(false);
-        ep1Bg.SetActive(false);
-        ep2Bg.SetActive(false);
-        ep3Bg.SetActive(false);
-        playButton.SetActive(false);
         epMenu.SetActive(false);
         mainMenu.SetActive(true);
+        settingsButton.SetActive(false);
+        credsButton.SetActive(false);
     }
 
     public void Ep1Button()
     {
-        ep1Title.SetActive(true);
-        ep1Bg.SetActive(true);
-        playButton.SetActive(true);
         playSceneName = "INTRO";
+        PlayEpisode();
 
-        ep2Title.SetActive(false);
-        ep2Bg.SetActive(false);
-        ep3Title.SetActive(false);
-        ep3Bg.SetActive(false);
     }
     public void Ep2Button()
-    {
-        ep2Title.SetActive(true);
-        ep2Bg.SetActive(true);
-        playButton.SetActive(true);
+    {;
         playSceneName = "Level 2";
+        PlayEpisode();
 
-        ep1Title.SetActive(false);
-        ep1Bg.SetActive(false);
-        ep3Title.SetActive(false);
-        ep3Bg.SetActive(false);
     }
     public void Ep3Button()
     {
-        ep3Title.SetActive(true);
-        ep3Bg.SetActive(true);
-        playButton.SetActive(true);
         playSceneName = "Level 3";
+        PlayEpisode();
 
-        ep2Title.SetActive(false);
-        ep2Bg.SetActive(false);
-        ep1Title.SetActive(false);
-        ep1Bg.SetActive(false);
+    }
+
+    public void Settings()
+    {
+        settingsButton.SetActive(true);
+        mainMenu.SetActive(false);
+    }
+
+    public void Credits()
+    {
+        credsButton.SetActive(true);
+        mainMenu.SetActive(false);
     }
 
     // --- EXIT BUTTON ---
