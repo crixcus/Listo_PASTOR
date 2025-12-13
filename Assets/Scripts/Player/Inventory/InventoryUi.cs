@@ -39,9 +39,12 @@ public class InventoryUi : MonoBehaviour
         foreach (var item in Inventory.instance.items)
         {
             GameObject newSlot = Instantiate(slotPrefab, slotsParent);
-            Image icon = newSlot.GetComponentInChildren<Image>();
+
+            // Instead of Image, we use RawImage
+            RawImage icon = newSlot.GetComponentInChildren<RawImage>();
+
             if (icon != null && item.icon != null)
-                icon.sprite = item.icon;
+                icon.texture = item.icon;   // Assign Texture instead of Sprite
 
             currentSlots.Add(newSlot);
         }

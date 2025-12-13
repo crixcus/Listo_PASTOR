@@ -12,13 +12,15 @@ public class Inventory : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            Debug.Log("Inventory instance set.");
+            items.Clear(); // Make sure inventory starts empty
+            Debug.Log("Inventory instance set. Inventory cleared on start.");
         }
         else
         {
             Destroy(gameObject);
         }
     }
+
 
     // Add item to inventory
     public void AddItem(Item item)
