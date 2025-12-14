@@ -12,10 +12,10 @@ public class StatusPopupUI : MonoBehaviour
     [SerializeField] GameObject popUpFineDamaged;
     [SerializeField] GameObject popUpCaution;
     [SerializeField] GameObject popUpDanger;
+    [SerializeField] Animator PopupAnimator;
 
     [Header("Fade Options")]
-    [SerializeField] float timeBeforeFadeOutBegins = 2;
-
+    [SerializeField] float timeBeforeFadeOutBegins = 4;
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
@@ -24,39 +24,29 @@ public class StatusPopupUI : MonoBehaviour
         DisableAllPopUps();
     }
 
-    public void DisplayHealthPopUp(int playerHealth)
+    public void DisplayHealthPopUp(int playerHealth, int currentStatusCategory)
     {
-        // 1. Stop any current fade sequence
-        if (currentFadeCoroutine != null)
-        {
-            StopCoroutine(currentFadeCoroutine);
-        }
 
-        // 2. Reset the alpha and disable ALL popups before setting the new one
-        canvasGroup.alpha = 0;
         DisableAllPopUps();
 
-        // 3. Set the appropriate popup active based on the 'health equivalent' value
-        if (playerHealth >= 100)
+ 
+        if (currentStatusCategory == 1) // Fine Damaged / Fine Full
         {
-            popUpFineFull.SetActive(true);
+            // Decide whether to show FineFull (100) or FineDamaged (66-99)
+            if (playerHealth >= 100)
+                popUpFineFull.SetActive(true);
+            else
+                popUpFineDamaged.SetActive(true);
         }
-        else if (playerHealth >= 66 && playerHealth <= 99)
-        {
-            popUpFineDamaged.SetActive(true);
-        }
-        else if (playerHealth >= 30 && playerHealth <= 65)
+        else if (currentStatusCategory == 2) // Caution
         {
             popUpCaution.SetActive(true);
         }
-        else if (playerHealth >= 1 && playerHealth <= 29)
+        else if (currentStatusCategory == 3) // Danger
         {
             popUpDanger.SetActive(true);
         }
-        else // Handle 0 health/100% trauma case
-        {
-            // Optionally handle death/full trauma state here if needed
-        }
+
 
         // 4. Start the new fade sequence and store the reference
         currentFadeCoroutine = StartCoroutine(FadeInPopUp());
