@@ -23,6 +23,7 @@ public class Interactable : MonoBehaviour
     {
         if (onInteraction != null)
         {
+            Debug.Log($"Interacted with: {gameObject.name}");
             onInteraction.Invoke();
         }
     }

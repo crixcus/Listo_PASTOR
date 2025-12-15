@@ -9,9 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4451064095250954572}
-  m_Layer: 0
+  - component: {fileID: 1217547591128080786}
+  - component: {fileID: 2967169820062392922}
+  m_Layer: 6
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,6 +34,48 @@ Transform:
   - {fileID: 6043228532541089501}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1217547591128080786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814889025148476311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c99031fce21ceb4b91d8cb8592f40e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openAngle: 75
+  speed: 3
+--- !u!114 &2967169820062392922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814889025148476311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50d4afaa8b9cceb47b1f09cb057b2b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Door
+  onInteraction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1217547591128080786}
+        m_TargetAssemblyTypeName: DoorToggle, Assembly-CSharp
+        m_MethodName: ToggleDoor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &6077437451144560950
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96,6 +140,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -103,6 +155,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4991775842151504909}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2335557311646296355}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 724933775753990126}
   m_SourcePrefab: {fileID: 100100000, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
 --- !u!4 &6043228532541089501 stripped
 Transform:
@@ -136,3 +194,45 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4164511204261677510, guid: 29da1ad9ab422494592b1b32febf7f39, type: 3}
+--- !u!114 &2335557311646296355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6383303782749289575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50d4afaa8b9cceb47b1f09cb057b2b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Door
+  onInteraction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1217547591128080786}
+        m_TargetAssemblyTypeName: DoorToggle, Assembly-CSharp
+        m_MethodName: ToggleDoor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &724933775753990126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6383303782749289575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c99031fce21ceb4b91d8cb8592f40e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openAngle: 90
+  speed: 3
