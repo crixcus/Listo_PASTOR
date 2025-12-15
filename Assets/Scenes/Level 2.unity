@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.0003241035, g: 0.0003241035, b: 0.0003241035, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4406,7 +4406,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bde6c5f75f1c5a5489ede7ec9a854bff, type: 3}
+  m_Sprite: {fileID: -7254813740688900229, guid: debfa6dbe1e2a7e41be71a2998342ac4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17163,7 +17163,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1296106010
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17204,7 +17204,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8fa730ad864bfa347b4e130ee04bd20b, type: 3}
+  m_Sprite: {fileID: 8520574159164327434, guid: debfa6dbe1e2a7e41be71a2998342ac4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17554,7 +17554,6 @@ GameObject:
   - component: {fileID: 1316188822}
   - component: {fileID: 1316188821}
   - component: {fileID: 1316188823}
-  - component: {fileID: 1316188824}
   m_Layer: 5
   m_Name: Image (2)
   m_TagString: Untagged
@@ -17570,7 +17569,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316188819}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -19.900475}
+  m_LocalPosition: {x: 0, y: 0, z: -28}
   m_LocalScale: {x: 1.1503, y: 1.1503, z: 1.1502998}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17594,7 +17593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6117647, g: 0.47450984, b: 0.18823531, a: 1}
+  m_Color: {r: 0.6117647, g: 0.47450984, b: 0.18823531, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -17670,8 +17669,8 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.047282804
-        value: 0.046880722
+        time: 0.2739483
+        value: 0.49925804
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -17723,27 +17722,6 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 0
---- !u!95 &1316188824
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1316188819}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 866f9ad4d6c08ca478bd82c61ddbb486, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1317065320
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20533,7 +20511,6 @@ GameObject:
   - component: {fileID: 1487718157}
   - component: {fileID: 1487718156}
   - component: {fileID: 1487718158}
-  - component: {fileID: 1487718159}
   m_Layer: 5
   m_Name: Image (3)
   m_TagString: Untagged
@@ -20549,7 +20526,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1487718154}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -28.000475}
+  m_LocalPosition: {x: 0, y: 0, z: -36.100014}
   m_LocalScale: {x: 1.1503, y: 1.1503, z: 1.1502997}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20573,7 +20550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.68235296, g: 0.21568629, b: 0.21568629, a: 1}
+  m_Color: {r: 0.68235296, g: 0.21568629, b: 0.21568629, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -20649,8 +20626,8 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.047282804
-        value: 0.046880722
+        time: 0.23128091
+        value: 0.53497887
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -20702,27 +20679,6 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 0
---- !u!95 &1487718159
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1487718154}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 866f9ad4d6c08ca478bd82c61ddbb486, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1488070440
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20843,7 +20799,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a4ef0ad81b4082641a20507b8df5d589, type: 3}
+  m_Sprite: {fileID: -5007797310101637233, guid: debfa6dbe1e2a7e41be71a2998342ac4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22906,6 +22862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1629314383}
   - component: {fileID: 1629314382}
+  - component: {fileID: 1629314384}
   m_Layer: 0
   m_Name: Spot Light
   m_TagString: Untagged
@@ -22990,6 +22947,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &1629314384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629314381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1001 &1635905690
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25273,7 +25253,6 @@ GameObject:
   - component: {fileID: 1829604578}
   - component: {fileID: 1829604577}
   - component: {fileID: 1829604579}
-  - component: {fileID: 1829604580}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: Untagged
@@ -25289,7 +25268,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1829604575}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -19.9}
+  m_LocalPosition: {x: 0, y: 0, z: -27.999538}
   m_LocalScale: {x: 1.1503, y: 1.1503, z: 1.1502999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25313,7 +25292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.32941177, g: 0.42352945, b: 0.07058824, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -25389,8 +25368,8 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.047282804
-        value: 0.046880722
+        time: 0.24994986
+        value: 0.5230705
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -25442,27 +25421,6 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 0
---- !u!95 &1829604580
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1829604575}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 866f9ad4d6c08ca478bd82c61ddbb486, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1855654528 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3886073133861910623, guid: edcbb1ffd37a176419fb130f6161c3af, type: 3}
