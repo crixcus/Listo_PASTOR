@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -10,7 +8,8 @@ public class PlayerInteraction : MonoBehaviour
     void Update()
     {
         CheckInteraction();
-        if (Input.GetKeyDown(KeyCode.F) && currentInteractable != null) // fixed Keycode -> KeyCode
+
+        if ((Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.E)) && currentInteractable != null)
         {
             currentInteractable.Interact();
         }
@@ -19,38 +18,30 @@ public class PlayerInteraction : MonoBehaviour
     void CheckInteraction()
     {
         RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); // removed extra .forward
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
         if (Physics.Raycast(ray, out hit, playerReach))
         {
-            if (hit.collider.tag == "Interactable")
+            if (hit.collider.CompareTag("Interactable"))
             {
-                Interactable newInteractable = hit.collider.GetComponent<Interactable>(); // fixed GetComponenet<currentInteractable>() -> GetComponent<Interactable>()
+                Interactable newInteractable = hit.collider.GetComponent<Interactable>();
 
                 if (currentInteractable && newInteractable != currentInteractable)
                 {
                     currentInteractable.DisableOutline();
                 }
 
-                if (newInteractable.enabled)
+                if (newInteractable != null && newInteractable.enabled)
                 {
                     SetNewCurrentInteractable(newInteractable);
-                }
-                else
-                {
-                    DisableCurrentInteractable();
+                    return;
                 }
             }
-            else
-            {
-                DisableCurrentInteractable();
-            }
         }
-        else
-        {
-            DisableCurrentInteractable();
-        }
+
+        DisableCurrentInteractable();
     }
+
     void SetNewCurrentInteractable(Interactable newInteractable)
     {
         currentInteractable = newInteractable;
@@ -67,6 +58,33 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractable.DisableOutline();
             currentInteractable = null;
+        }
+    }
+
+    // =======================
+    // DEBUG GIZMOS
+    // =======================
+    void OnDrawGizmos()
+    {
+        if (Camera.main == null) return;
+
+        Vector3 origin = Camera.main.transform.position;
+        Vector3 direction = Camera.main.transform.forward;
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(origin, direction, out hit, playerReach))
+        {
+            // HIT SOMETHING
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(origin, hit.point);
+            Gizmos.DrawSphere(hit.point, 0.05f);
+        }
+        else
+        {
+            // HIT NOTHING
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(origin, origin + direction * playerReach);
         }
     }
 }
