@@ -1,7 +1,9 @@
 using UnityEngine;
 
+
 public class PlayerInteraction : MonoBehaviour
 {
+    public Camera playerCamera; // Assign your main player camera here
     public float playerReach = 3f;
     Interactable currentInteractable;
 
@@ -18,7 +20,7 @@ public class PlayerInteraction : MonoBehaviour
     void CheckInteraction()
     {
         RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
         if (Physics.Raycast(ray, out hit, playerReach))
         {
@@ -61,28 +63,23 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // =======================
-    // DEBUG GIZMOS
-    // =======================
     void OnDrawGizmos()
     {
-        if (Camera.main == null) return;
+        if (playerCamera == null) return;
 
-        Vector3 origin = Camera.main.transform.position;
-        Vector3 direction = Camera.main.transform.forward;
+        Vector3 origin = playerCamera.transform.position;
+        Vector3 direction = playerCamera.transform.forward;
 
         RaycastHit hit;
 
         if (Physics.Raycast(origin, direction, out hit, playerReach))
         {
-            // HIT SOMETHING
             Gizmos.color = Color.green;
             Gizmos.DrawLine(origin, hit.point);
             Gizmos.DrawSphere(hit.point, 0.05f);
         }
         else
         {
-            // HIT NOTHING
             Gizmos.color = Color.red;
             Gizmos.DrawLine(origin, origin + direction * playerReach);
         }
