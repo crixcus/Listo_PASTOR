@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class InteractableItems : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class InteractableItems : MonoBehaviour
     public bool canGather = true;
     public GameObject items;
     public GameObject Bag;
+    public int objCounter = 0;
 
     private void Start()
     {
@@ -31,8 +33,13 @@ public class InteractableItems : MonoBehaviour
         if (onInteraction != null)
         {
             Debug.Log($"Interacted with: {gameObject.name}");
+            objCounter++;
             showPanel();
             onInteraction.Invoke();
+            if (objCounter == 11)
+            {
+                SceneManager.LoadScene(3);
+            }
         }
     }
 
