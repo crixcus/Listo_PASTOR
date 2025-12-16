@@ -6,6 +6,7 @@ public class PlayerInteraction : MonoBehaviour
     public Camera playerCamera; // Assign your main player camera here
     public float playerReach = 3f;
     Interactable currentInteractable;
+    InteractableItems currentInteractableItem;
 
     void Update()
     {
@@ -15,6 +16,11 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractable.Interact();
         }
+        if ((Input.GetKeyDown(KeyCode.F) && currentInteractableItem != null))
+        {
+            currentInteractableItem.InteractItem();
+        }
+
     }
 
     void CheckInteraction()
@@ -39,6 +45,22 @@ public class PlayerInteraction : MonoBehaviour
                     return;
                 }
             }
+
+            if (hit.collider.CompareTag("Interactable Item"))
+            {
+                InteractableItems newInteractable = hit.collider.GetComponent<InteractableItems>();
+
+                if (currentInteractable && newInteractable != currentInteractable)
+                {
+                    currentInteractable.DisableOutline();
+                }
+
+                if (newInteractable != null && newInteractable.enabled)
+                {
+                    SetNewCurrentInteractableItem(newInteractable);
+                    return;
+                }
+            }
         }
 
         DisableCurrentInteractable();
@@ -50,6 +72,13 @@ public class PlayerInteraction : MonoBehaviour
         currentInteractable.EnableOutline();
 
         HUDController.instance.EnableInteractionText(currentInteractable.message);
+    }
+    void SetNewCurrentInteractableItem(InteractableItems newInteractable)
+    {
+        currentInteractableItem = newInteractable;
+        currentInteractableItem.EnableOutline();
+
+        HUDController.instance.EnableInteractionText(currentInteractableItem.message);
     }
 
     void DisableCurrentInteractable()
