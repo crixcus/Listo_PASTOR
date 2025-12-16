@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -211,6 +211,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1601976095}
   m_SourcePrefab: {fileID: 100100000, guid: 7cf5abc5cf0fa524b88b01121304a75e, type: 3}
+--- !u!4 &32017413 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6645143983353631823, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
+  m_PrefabInstance: {fileID: 1467980599}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &44145347
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,6 +3406,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1224142816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1224142817}
+  m_Layer: 0
+  m_Name: mop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1224142817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224142816}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.0139, y: 0.011029707, z: 0}
+  m_LocalScale: {x: 0.028281301, y: 0.028281301, z: 0.028281301}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1389455118}
+  m_Father: {fileID: 32017413}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1328601042
 GameObject:
   m_ObjectHideFlags: 0
@@ -3863,6 +3900,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &1389455118 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
+  m_PrefabInstance: {fileID: 1819413998}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1467980599
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3925,7 +3967,10 @@ PrefabInstance:
       objectReference: {fileID: 63561906}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6645143983353631823, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1224142817}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3419895735243540680, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
       insertIndex: -1
@@ -4496,7 +4541,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1224142817}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalScale.x
@@ -4512,15 +4557,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -14.7927265
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.7599998
+      value: 1.7400001
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 27.86866
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5390,6 +5435,5 @@ SceneRoots:
   - {fileID: 44145351}
   - {fileID: 29465736}
   - {fileID: 1467980599}
-  - {fileID: 1819413998}
   - {fileID: 1219201054}
   - {fileID: 618820325}
