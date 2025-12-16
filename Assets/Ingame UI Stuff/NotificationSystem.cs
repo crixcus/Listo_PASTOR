@@ -44,7 +44,8 @@ public class NotificationSystem : MonoBehaviour
         new NotificationMessage { type = NotificationType.CheckPhone, message = "Check your phone for important stuff" },
         new NotificationMessage { type = NotificationType.UseFlashlight, message = "Use your Flashlight!" },
         new NotificationMessage { type = NotificationType.TraumaRising, message = "Your Trauma is Rising!" },
-        new NotificationMessage { type = NotificationType.ObjectiveComplete, message = "Objective complete!" }
+        new NotificationMessage { type = NotificationType.ObjectiveComplete, message = "Objective complete!" },
+        new NotificationMessage { type = NotificationType.Custom, message = "" }
     };
 
     private Dictionary<NotificationType, string> messageDictionary = new Dictionary<NotificationType, string>();

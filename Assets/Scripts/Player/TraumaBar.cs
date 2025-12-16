@@ -114,14 +114,27 @@ public class TraumaBar : MonoBehaviour
         if (traumaPercent >= warningThreshold1 && !hasWarned30)
         {
             hasWarned30 = true;
+            Debug.Log("Trauma Warning: 30% reached.");
+            NotificationSystem.Instance.ShowNotification(
+    $"Your trauma level is ({currentStatus:0}%)"
+);
         }
         else if (traumaPercent >= warningThreshold2 && !hasWarned60)
         {
             hasWarned60 = true;
+            Debug.Log("Trauma Warning: 60% reached.");
+            NotificationSystem.Instance.ShowNotification(
+    $"Your trauma is rising ({currentStatus:0}%)"
+);
         }
         else if (traumaPercent >= warningThreshold3 && !hasWarned80)
         {
             hasWarned80 = true;
+            Debug.Log("Trauma Warning: 80% reached.");
+
+            NotificationSystem.Instance.ShowNotification(
+    $"Your trauma is rising ({currentStatus:0}%)"
+);
         }
     }
 }
