@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.009939909, g: 0.00993991, b: 0.00993991, a: 1}
+  m_IndirectSpecularColor: {r: 0.08019561, g: 0.12836418, b: 0.24694258, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4606,6 +4606,38 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.962
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.134
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.283
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.8127172
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5675201
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.108187124
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.07554697
+      objectReference: {fileID: 0}
+    - target: {fileID: 972284602902931138, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 110.147
+      objectReference: {fileID: 0}
     - target: {fileID: 1293766724411984965, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
       propertyPath: m_Name
       value: Parent of All
@@ -4798,9 +4830,21 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Interactable
       objectReference: {fileID: 0}
+    - target: {fileID: 4938491144511651130, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_Intensity
+      value: 72.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938491144511651130, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_SpotAngle
+      value: 179
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938491144511651130, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 111.321556
+      objectReference: {fileID: 0}
     - target: {fileID: 5039919683576199101, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
       propertyPath: m_Intensity
-      value: 22.7
+      value: 26.2
       objectReference: {fileID: 0}
     - target: {fileID: 5249774826176151421, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
       propertyPath: m_text
@@ -4845,6 +4889,10 @@ PrefabInstance:
     - target: {fileID: 6212636910034858633, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
       propertyPath: m_InnerSpotAngle
       value: 59.66656
+      objectReference: {fileID: 0}
+    - target: {fileID: 6499734488478908249, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6893849346912398827, guid: b0a04dc4eaae4494f84459ba035ed71a, type: 3}
       propertyPath: m_Type
@@ -6164,6 +6212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4afb5f9c7a61035448a346f7e663aca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 1935803502}
   playerReach: 3
 --- !u!4 &1495735427 stripped
 Transform:
@@ -7330,7 +7379,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 7d16a46f725f448489d563956e540936, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
-  m_Pitch: 0.11
+  m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -7338,7 +7387,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1.7063694
-  MaxDistance: 12.512068
+  MaxDistance: 6.02
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
