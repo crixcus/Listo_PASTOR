@@ -35,7 +35,7 @@ public class MenuButtons : MonoBehaviour
 
     public void Ep1Button()
     {
-        playSceneName = "INTRO";
+        playSceneName = "Level 1";
         PlayEpisode();
 
     }

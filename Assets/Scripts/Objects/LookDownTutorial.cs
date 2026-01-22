@@ -5,7 +5,7 @@ public class LookDownTutorial : MonoBehaviour
 {
     public Transform playerCamera; // Assign your camera here
     public TMP_Text tutorialText;  // Assign your TMP Text here
-    public float lookDownThreshold = 0.7f; // How much the player needs to look down (0-1)
+    public float lookDownThreshold = 0.1f; // How much the player needs to look down (0-1)
     public float fadeSpeed = 2f; // Speed of fade in/out
 
     private float targetAlpha = 0f; // Target alpha value

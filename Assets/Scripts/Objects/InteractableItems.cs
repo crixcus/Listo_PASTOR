@@ -38,7 +38,7 @@ public class InteractableItems : MonoBehaviour
             onInteraction.Invoke();
             if (objCounter == 11)
             {
-                SceneManager.LoadScene(3);
+                SceneManager.LoadScene("Level 2");
             }
         }
     }
