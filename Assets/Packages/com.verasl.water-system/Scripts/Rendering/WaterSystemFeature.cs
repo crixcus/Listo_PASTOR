@@ -37,7 +37,7 @@ namespace WaterSystem
                 cameraTextureDescriptor.colorFormat = RenderTextureFormat.Default;
                 // get a temp RT for rendering into
                 cmd.GetTemporaryRT(m_WaterFX.id, cameraTextureDescriptor, FilterMode.Bilinear);
-                ConfigureTarget(m_WaterFX.Identifier());
+                //ConfigureTarget(m_WaterFX.Identifier());
                 // clear the screen with a specific color for the packed data
                 ConfigureClear(ClearFlag.Color, m_ClearColor);
             }

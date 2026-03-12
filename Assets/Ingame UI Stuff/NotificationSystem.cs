@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using System;
 
+/// <summary>
+/// Defines the types of notifications available in the game.
+/// Add new entries here and register them in the Inspector's
+/// notificationMessages array on the NotificationSystem component.
+/// </summary>
 public enum NotificationType
 {
     ItemCollected,
@@ -12,192 +15,247 @@ public enum NotificationType
     CheckPhone,
     UseFlashlight,
     TraumaRising,
-    ObjectiveComplete,
-    Custom // For custom messages
+    ObjectiveComplete
 }
 
+/// <summary>
+/// Maps a NotificationType to its display string.
+/// Configured via the Inspector on the NotificationSystem component.
+/// </summary>
 [System.Serializable]
 public class NotificationMessage
 {
     public NotificationType type;
-    public string message;
+    [TextArea] public string message;
 }
 
+/// <summary>
+/// Manages the in-game notification UI. Displays queued messages one at a time
+/// using Animator-driven popup and disappear animations.
+///
+/// Usage:
+///   - Place this component on a persistent UI GameObject (e.g. a Canvas child).
+///   - Assign the Animator and TextMeshProUGUI references in the Inspector.
+///   - Call NotificationSystem.Instance.ShowNotification(...) or any static Trigger* helper.
+///
+/// The Animator must have two states:
+///   "Notif_Popup"     — plays when a notification appears.
+///   "Notif_Disappear" — plays when a notification leaves.
+/// </summary>
 public class NotificationSystem : MonoBehaviour
 {
-    // Singleton instance for easy access
+    /// <summary>Global singleton. Assigned on Awake; null if no instance exists in the scene.</summary>
     public static NotificationSystem Instance { get; private set; }
 
-    [Header("UI")]
+    [Header("UI References")]
+    [Tooltip("Animator controlling popup and disappear animations.")]
     public Animator animator;
+
+    [Tooltip("Text component that displays the notification message.")]
     public TextMeshProUGUI notifText;
 
     [Header("Timing")]
+    [Tooltip("Seconds the notification stays fully visible before dismissing.")]
     public float displayTime = 5f;
 
-    [Header("Message Container")]
-    [Tooltip("Define your notification messages here. Each situation type maps to a message.")]
+    [Header("Queue Settings")]
+    [Tooltip("Maximum number of pending notifications. Older messages are dropped when full.")]
+    public int maxQueueSize = 5;
+
+    [Header("Notification Messages")]
+    [Tooltip("Maps each NotificationType to a display message. Editable in the Inspector.")]
     public NotificationMessage[] notificationMessages = new NotificationMessage[]
     {
-        new NotificationMessage { type = NotificationType.ItemCollected, message = "Item collected!" },
-        new NotificationMessage { type = NotificationType.FloodRising, message = "Flood is Rising!" },
-        new NotificationMessage { type = NotificationType.CheckPhone, message = "Check your phone for important stuff" },
-        new NotificationMessage { type = NotificationType.UseFlashlight, message = "Use your Flashlight!" },
-        new NotificationMessage { type = NotificationType.TraumaRising, message = "Your Trauma is Rising!" },
-        new NotificationMessage { type = NotificationType.ObjectiveComplete, message = "Objective complete!" },
-        new NotificationMessage { type = NotificationType.Custom, message = "" }
+        new NotificationMessage { type = NotificationType.ItemCollected,    message = "Item collected!" },
+        new NotificationMessage { type = NotificationType.FloodRising,      message = "Flood is Rising!" },
+        new NotificationMessage { type = NotificationType.CheckPhone,       message = "Check your phone for important updates." },
+        new NotificationMessage { type = NotificationType.UseFlashlight,    message = "Use your Flashlight!" },
+        new NotificationMessage { type = NotificationType.TraumaRising,     message = "Your Trauma is Rising!" },
+        new NotificationMessage { type = NotificationType.ObjectiveComplete, message = "Objective complete!" }
     };
 
-    private Dictionary<NotificationType, string> messageDictionary = new Dictionary<NotificationType, string>();
-    private Queue<string> notifQueue = new Queue<string>();
-    private bool isShowing = false;
+    // ------------------------------------------------------------------
+    // Private state
+    // ------------------------------------------------------------------
 
-    void Awake()
+    private readonly Dictionary<NotificationType, string> _messageLookup = new();
+    private readonly Queue<string> _queue = new();
+    private bool _isShowing;
+
+    // ------------------------------------------------------------------
+    // Unity lifecycle
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Initialises the singleton and builds the internal message lookup table.
+    /// Disables the component and logs an error if required references are missing.
+    /// </summary>
+    private void Awake()
     {
-        // Singleton setup
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        // Build the message dictionary from the inspector array
-        foreach (var notifMsg in notificationMessages)
+        Instance = this;
+
+        if (!ValidateReferences()) return;
+
+        foreach (var entry in notificationMessages)
         {
-            if (!messageDictionary.ContainsKey(notifMsg.type))
-            {
-                messageDictionary[notifMsg.type] = notifMsg.message;
-            }
+            _messageLookup.TryAdd(entry.type, entry.message);
         }
     }
 
-    // ------------------------------
-    // PUBLIC CALLS
-    // ------------------------------
-    
+    // ------------------------------------------------------------------
+    // Public API
+    // ------------------------------------------------------------------
+
     /// <summary>
-    /// Show a notification by situation type (uses predefined messages)
+    /// Enqueues a notification using a predefined <see cref="NotificationType"/>.
+    /// The message text is resolved from the Inspector configuration.
     /// </summary>
-    public void ShowNotification(NotificationType notificationType)
+    /// <param name="type">The notification type to display.</param>
+    public void ShowNotification(NotificationType type)
     {
-        if (messageDictionary.ContainsKey(notificationType))
+        if (_messageLookup.TryGetValue(type, out string message))
         {
-            ShowNotification(messageDictionary[notificationType]);
+            Enqueue(message);
         }
         else
         {
-            Debug.LogWarning($"Notification type '{notificationType}' not found in message container. Add it in the inspector.");
+            Debug.LogWarning($"[NotificationSystem] No message registered for type '{type}'. " +
+                             "Add it to the notificationMessages array in the Inspector.");
         }
     }
 
     /// <summary>
-    /// Show a custom notification message (original method for flexibility)
+    /// Enqueues a notification with an arbitrary string message.
+    /// Use this for dynamic content such as item names or objective titles.
     /// </summary>
+    /// <param name="message">The text to display in the notification.</param>
     public void ShowNotification(string message)
     {
-        notifQueue.Enqueue(message);
+        Enqueue(message);
+    }
 
-        if (!isShowing)
+    // ------------------------------------------------------------------
+    // Static trigger helpers
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Triggers a "Flood Rising" notification.
+    /// Call when the flood level increases or crosses a threshold.
+    /// </summary>
+    public static void TriggerFloodRising() =>
+        Instance?.ShowNotification(NotificationType.FloodRising);
+
+    /// <summary>
+    /// Triggers a "Check Phone" notification.
+    /// Call when a new in-game message arrives or the player enters a relevant area.
+    /// </summary>
+    public static void TriggerCheckPhone() =>
+        Instance?.ShowNotification(NotificationType.CheckPhone);
+
+    /// <summary>
+    /// Triggers a "Use Flashlight" notification.
+    /// Call when the player enters a dark area that requires the flashlight.
+    /// </summary>
+    public static void TriggerUseFlashlight() =>
+        Instance?.ShowNotification(NotificationType.UseFlashlight);
+
+    /// <summary>
+    /// Triggers a "Trauma Rising" notification.
+    /// Call when the player's trauma stat crosses a warning threshold.
+    /// </summary>
+    public static void TriggerTraumaRising() =>
+        Instance?.ShowNotification(NotificationType.TraumaRising);
+
+    /// <summary>
+    /// Triggers an "Objective Complete" notification.
+    /// If <paramref name="objectiveName"/> is provided, it is included in the message text.
+    /// </summary>
+    /// <param name="objectiveName">Optional name of the completed objective.</param>
+    public static void TriggerObjectiveComplete(string objectiveName = "")
+    {
+        if (Instance == null) return;
+
+        string message = string.IsNullOrEmpty(objectiveName)
+            ? null
+            : $"Objective '{objectiveName}' complete!";
+
+        if (message != null)
+            Instance.ShowNotification(message);
+        else
+            Instance.ShowNotification(NotificationType.ObjectiveComplete);
+    }
+
+    // ------------------------------------------------------------------
+    // Private helpers
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Adds a message to the notification queue and starts processing if idle.
+    /// Drops the message silently if the queue has reached <see cref="maxQueueSize"/>.
+    /// </summary>
+    /// <param name="message">The message string to enqueue.</param>
+    private void Enqueue(string message)
+    {
+        if (_queue.Count >= maxQueueSize)
+        {
+            Debug.LogWarning("[NotificationSystem] Queue full — notification dropped.");
+            return;
+        }
+
+        _queue.Enqueue(message);
+
+        if (!_isShowing)
             StartCoroutine(ProcessQueue());
     }
 
-    // ------------------------------
-    // STATIC HELPER METHODS FOR TRIGGERS
-    // ------------------------------
-    
     /// <summary>
-    /// Trigger flood rising notification. Call this when flood starts rising or reaches certain heights.
+    /// Validates that required component references are assigned.
+    /// Disables the component and logs an error if any reference is missing.
     /// </summary>
-    public static void TriggerFloodRising()
+    /// <returns><c>true</c> if all references are valid; otherwise <c>false</c>.</returns>
+    private bool ValidateReferences()
     {
-        if (Instance != null)
-        {
-            Instance.ShowNotification(NotificationType.FloodRising);
-        }
+        if (animator != null && notifText != null) return true;
+
+        Debug.LogError("[NotificationSystem] Missing required references — " +
+                       "assign Animator and TextMeshProUGUI in the Inspector.");
+        enabled = false;
+        return false;
     }
 
     /// <summary>
-    /// Trigger phone check notification. Call this when player should check their phone (e.g., new message, dark area, etc.)
+    /// Coroutine that dequeues and displays notifications one at a time.
+    /// Waits one frame after calling <c>Animator.Play</c> before reading the
+    /// clip length, ensuring the animator has transitioned to the new state.
     /// </summary>
-    public static void TriggerCheckPhone()
-    {
-        if (Instance != null)
-        {
-            Instance.ShowNotification(NotificationType.CheckPhone);
-        }
-    }
-
-    /// <summary>
-    /// Trigger flashlight notification. Call this when player enters dark areas or should use flashlight.
-    /// </summary>
-    public static void TriggerUseFlashlight()
-    {
-        if (Instance != null)
-        {
-            Instance.ShowNotification(NotificationType.UseFlashlight);
-        }
-    }
-
-    /// <summary>
-    /// Trigger trauma rising notification. Call this when trauma reaches warning thresholds.
-    /// </summary>
-    public static void TriggerTraumaRising()
-    {
-        if (Instance != null)
-        {
-            Instance.ShowNotification(NotificationType.TraumaRising);
-        }
-    }
-
-    /// <summary>
-    /// Trigger objective complete notification. Call this when an objective is completed.
-    /// </summary>
-    public static void TriggerObjectiveComplete(string objectiveName = "")
-    {
-        if (Instance != null)
-        {
-            if (string.IsNullOrEmpty(objectiveName))
-            {
-                Instance.ShowNotification(NotificationType.ObjectiveComplete);
-            }
-            else
-            {
-                Instance.ShowNotification($"Objective '{objectiveName}' complete!");
-            }
-        }
-    }
-
-    // ------------------------------
-    // QUEUE PROCESSOR
-    // ------------------------------
     private IEnumerator ProcessQueue()
     {
-        isShowing = true;
+        _isShowing = true;
 
-        while (notifQueue.Count > 0)
+        while (_queue.Count > 0)
         {
-            string msg = notifQueue.Dequeue();
-            notifText.text = msg;
+            notifText.text = _queue.Dequeue();
 
+            // Play popup animation — wait one frame so the animator transitions
             animator.Play("Notif_Popup", 0, 0f);
-
-            // Wait for popup animation to finish
+            yield return null;
             yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
 
             // Hold on screen
             yield return new WaitForSeconds(displayTime);
 
-            // Play leave animation
+            // Play disappear animation — same one-frame wait
             animator.Play("Notif_Disappear", 0, 0f);
-
-            // Wait for disappear animation
+            yield return null;
             yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
         }
 
-        isShowing = false;
+        _isShowing = false;
     }
 }

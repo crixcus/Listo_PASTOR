@@ -9,7 +9,7 @@ public class CleanableObject : MonoBehaviour
     public static List<CleanableObject> AllDirtObjects = new List<CleanableObject>();
     private static int cleanedCount = 0;
 
-    [Range(0f, 1f)]
+    [Range(0.3f, 1f)]
     public float dirtAmount = 1f; // 1 = fully dirty, 0 = fully clean
 
     private SpriteRenderer spriteRenderer;
