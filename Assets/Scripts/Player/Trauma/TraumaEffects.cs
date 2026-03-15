@@ -2,23 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
-/// <summary>
-/// Drives all trauma-based visual effects using URP Post Processing.
-/// Attach to the same GameObject as your Global Volume, or any active GameObject.
-///
-/// Setup:
-///   1. Create a Global Volume in your scene (GameObject > Volume > Global Volume)
-///   2. Create a Volume Profile and add these overrides:
-///      - Vignette
-///      - Color Adjustments
-///      - Lens Distortion
-///   3. Assign the Volume to the 'volume' field in this script.
-///   4. Assign the camera to 'playerCamera' for screen shake.
-///   5. Assign TraumaPulseUI reference.
-///
-/// TraumaBar calls SetTrauma() every time trauma changes.
-/// </summary>
 public class TraumaEffects : MonoBehaviour
 {
     public static TraumaEffects Instance { get; private set; }
@@ -71,6 +56,13 @@ public class TraumaEffects : MonoBehaviour
     [Tooltip("How fast the red vignette pulses at critical trauma.")]
     public float redPulseSpeed = 2f;
 
+    [Header("Red Overlay")]
+    [Tooltip("Full screen red UI Image, set alpha to 0 in Inspector.")]
+    public Image redOverlay;
+
+    [Tooltip("Max alpha of the red overlay at 100% trauma.")]
+    public float maxOverlayAlpha = 0.4f;
+
     // ------------------------------------------------------------------
     // Private state
     // ------------------------------------------------------------------
@@ -102,7 +94,6 @@ public class TraumaEffects : MonoBehaviour
             return;
         }
 
-        // Grab post-process overrides
         volume.profile.TryGet(out _vignette);
         volume.profile.TryGet(out _colorAdjustments);
         volume.profile.TryGet(out _lensDistortion);
@@ -117,6 +108,14 @@ public class TraumaEffects : MonoBehaviour
         if (playerCamera != null)
             _cameraOriginLocal = playerCamera.localPosition;
 
+        // Make sure overlay starts invisible
+        if (redOverlay != null)
+        {
+            Color c = redOverlay.color;
+            c.a = 0f;
+            redOverlay.color = c;
+        }
+
         _initialized = true;
         ApplyEffects(0f);
     }
@@ -125,7 +124,7 @@ public class TraumaEffects : MonoBehaviour
     {
         if (!_initialized) return;
 
-        // Screen shake — runs every frame based on current trauma
+        // Screen shake
         if (playerCamera != null && _currentTrauma > 0.1f)
         {
             float shakePower = Mathf.InverseLerp(0.1f, 1f, _currentTrauma) * maxShakeMagnitude;
@@ -137,7 +136,6 @@ public class TraumaEffects : MonoBehaviour
         }
         else if (playerCamera != null)
         {
-            // Smoothly return to origin when trauma is low
             playerCamera.localPosition = Vector3.Lerp(
                 playerCamera.localPosition,
                 _cameraOriginLocal,
@@ -153,7 +151,6 @@ public class TraumaEffects : MonoBehaviour
 
             _vignette.color.Override(Color.Lerp(vignetteHighColor, Color.red, pulse * t));
 
-            // Boost intensity on the pulse
             float baseIntensity = Mathf.Lerp(vignetteMin, vignetteMax, _currentTrauma);
             _vignette.intensity.Override(baseIntensity + pulse * 0.1f * t);
         }
@@ -163,10 +160,6 @@ public class TraumaEffects : MonoBehaviour
     // Public API
     // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Called by TraumaBar whenever the trauma value changes.
-    /// Drives all visual effects proportional to the trauma level (0–1).
-    /// </summary>
     public void SetTrauma(float trauma)
     {
         _currentTrauma = Mathf.Clamp01(trauma);
@@ -177,9 +170,6 @@ public class TraumaEffects : MonoBehaviour
     // Private
     // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Applies all post-process overrides proportional to the trauma value.
-    /// </summary>
     private void ApplyEffects(float t)
     {
         // --- Vignette ---
@@ -199,5 +189,13 @@ public class TraumaEffects : MonoBehaviour
         // --- Lens Distortion ---
         if (_lensDistortion != null)
             _lensDistortion.intensity.Override(Mathf.Lerp(0f, maxDistortion, t));
+
+        // --- Red Overlay ---
+        if (redOverlay != null)
+        {
+            Color c = redOverlay.color;
+            c.a = Mathf.Lerp(0f, maxOverlayAlpha, t);
+            redOverlay.color = c;
+        }
     }
 }
