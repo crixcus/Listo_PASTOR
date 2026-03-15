@@ -78,15 +78,16 @@ public class CleanableObject : MonoBehaviour
     private void OnCleaned()
     {
         cleanedCount++;
-
         float percentCleaned = GetCleanPercentage();
-
         Debug.Log($"{gameObject.name} cleaned. Total progress: {percentCleaned}%");
 
         if (NotificationSystem.Instance != null)
         {
             NotificationSystem.Instance.ShowDebounced("cleaning", $"Cleaning progress: {percentCleaned:0}%", 1f);
         }
+
+        // Disable object so collider disappears when fully clean
+        gameObject.SetActive(false);
     }
 
     // ======================
