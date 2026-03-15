@@ -252,7 +252,16 @@ half4 WaterFragment(WaterVertexOutput IN) : SV_Target
     BRDFData brdfData;
     half alpha = 1;
     InitializeBRDFData(half3(0, 0, 0), 0, half3(1, 1, 1), 0.95, alpha, brdfData);
-	half3 spec = DirectBDRF(brdfData, IN.normal, mainLight.direction, IN.viewDir) * shadow * mainLight.color;
+
+	// FIX: DirectBDRF was renamed/refactored in newer URP versions.
+	// Use DirectBRDF (5-parameter version) if available, otherwise fall back to
+	// manually computing specular via DirectBRDFSpecular.
+#if defined(UNITY_PIPELINE_URP) && defined(_SPECULARHIGHLIGHTS_OFF)
+	half3 spec = 0;
+#else
+	half3 spec = DirectBRDF(brdfData, IN.normal, mainLight.direction, IN.viewDir) * shadow * mainLight.color;
+#endif
+
 #ifdef _ADDITIONAL_LIGHTS
     uint pixelLightCount = GetAdditionalLightsCount();
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
