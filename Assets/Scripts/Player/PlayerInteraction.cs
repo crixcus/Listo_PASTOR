@@ -6,10 +6,11 @@ public class PlayerInteraction : MonoBehaviour
     public float playerReach = 3f;
     Interactable currentInteractable;
     InteractableItems currentInteractableItem;
+    PickupInteractable currentPickupInteractable;
+
     void Update()
     {
         CheckInteraction();
-        // F key only for interacting
         if (Input.GetKeyDown(KeyCode.F) && currentInteractable != null)
         {
             currentInteractable.Interact();
@@ -18,7 +19,12 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractableItem.InteractItem();
         }
+        if (Input.GetKeyDown(KeyCode.F) && currentPickupInteractable != null)
+        {
+            currentPickupInteractable.Interact();
+        }
     }
+
     void CheckInteraction()
     {
         RaycastHit hit;
@@ -27,6 +33,15 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (hit.collider.CompareTag("Interactable"))
             {
+                // Check for PickupInteractable first
+                PickupInteractable newPickup = hit.collider.GetComponent<PickupInteractable>();
+                if (newPickup != null && newPickup.enabled)
+                {
+                    SetNewCurrentPickupInteractable(newPickup);
+                    return;
+                }
+
+                // Then check for regular Interactable
                 Interactable newInteractable = hit.collider.GetComponent<Interactable>();
                 if (currentInteractable && newInteractable != currentInteractable)
                 {
@@ -38,6 +53,7 @@ public class PlayerInteraction : MonoBehaviour
                     return;
                 }
             }
+
             if (hit.collider.CompareTag("Interactable Item"))
             {
                 InteractableItems newInteractable = hit.collider.GetComponent<InteractableItems>();
@@ -54,18 +70,31 @@ public class PlayerInteraction : MonoBehaviour
         }
         DisableCurrentInteractable();
     }
+
     void SetNewCurrentInteractable(Interactable newInteractable)
     {
         currentInteractable = newInteractable;
         currentInteractable.EnableOutline();
         HUDController.instance.EnableInteractionText(currentInteractable.message);
     }
+
     void SetNewCurrentInteractableItem(InteractableItems newInteractable)
     {
         currentInteractableItem = newInteractable;
         currentInteractableItem.EnableOutline();
         HUDController.instance.EnableInteractionText(currentInteractableItem.message);
     }
+
+    void SetNewCurrentPickupInteractable(PickupInteractable newPickup)
+    {
+        if (currentPickupInteractable && newPickup != currentPickupInteractable)
+            currentPickupInteractable.DisableOutline();
+
+        currentPickupInteractable = newPickup;
+        currentPickupInteractable.EnableOutline();
+        HUDController.instance.EnableInteractionText(currentPickupInteractable.message);
+    }
+
     void DisableCurrentInteractable()
     {
         HUDController.instance.DisableInteractionText();
@@ -74,7 +103,13 @@ public class PlayerInteraction : MonoBehaviour
             currentInteractable.DisableOutline();
             currentInteractable = null;
         }
+        if (currentPickupInteractable)
+        {
+            currentPickupInteractable.DisableOutline();
+            currentPickupInteractable = null;
+        }
     }
+
     void OnDrawGizmos()
     {
         if (playerCamera == null) return;
