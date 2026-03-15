@@ -46,10 +46,12 @@ public class PausePanel : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            UnlockCursor();
             if (isPaused)
             {
                 if (settingsPanel != null)
                     settingsPanel.SetActive(false);
+                LockCursor();
                 ResumeGame();
             }
             else
@@ -68,7 +70,7 @@ public class PausePanel : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(true);
 
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         isPaused = true;
 
         // Disable player look and interaction
@@ -108,7 +110,8 @@ public class PausePanel : MonoBehaviour
     public void MainMenu()
     {
         Time.timeScale = 1f;
-        LockCursor();
+        UnlockCursor();
+        pausePanel.SetActive(false);
         SceneManager.LoadScene("MainMenu");
     }
 

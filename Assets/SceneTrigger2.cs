@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
-public class sceneTrigger : MonoBehaviour
+public class sceneTrigger2 : MonoBehaviour
 {
     public GameObject timelineObject;
 
@@ -13,6 +13,6 @@ public class sceneTrigger : MonoBehaviour
             timelineObject.SetActive(true);
         }
 
-        
+        SceneManager.LoadScene("Level 2");
     }
 }
