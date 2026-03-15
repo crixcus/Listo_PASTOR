@@ -85,9 +85,7 @@ public class CleanableObject : MonoBehaviour
 
         if (NotificationSystem.Instance != null)
         {
-            NotificationSystem.Instance.ShowNotification(
-                $"Cleaning progress: {percentCleaned:0}%"
-            );
+            NotificationSystem.Instance.ShowDebounced("cleaning", $"Cleaning progress: {percentCleaned:0}%", 1f);
         }
     }
 

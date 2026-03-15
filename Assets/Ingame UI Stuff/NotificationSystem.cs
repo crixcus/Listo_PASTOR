@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-/// <summary>
-/// Defines the types of notifications available in the game.
-/// Add new entries here and register them in the Inspector's
-/// notificationMessages array on the NotificationSystem component.
-/// </summary>
 public enum NotificationType
 {
     ItemCollected,
@@ -18,10 +13,6 @@ public enum NotificationType
     ObjectiveComplete
 }
 
-/// <summary>
-/// Maps a NotificationType to its display string.
-/// Configured via the Inspector on the NotificationSystem component.
-/// </summary>
 [System.Serializable]
 public class NotificationMessage
 {
@@ -33,173 +24,155 @@ public class NotificationMessage
 /// Manages the in-game notification UI. Displays queued messages one at a time
 /// using Animator-driven popup and disappear animations.
 ///
-/// Usage:
-///   - Place this component on a persistent UI GameObject (e.g. a Canvas child).
-///   - Assign the Animator and TextMeshProUGUI references in the Inspector.
-///   - Call NotificationSystem.Instance.ShowNotification(...) or any static Trigger* helper.
-///
-/// The Animator must have two states:
-///   "Notif_Popup"     — plays when a notification appears.
-///   "Notif_Disappear" — plays when a notification leaves.
+/// Two modes:
+///   ShowNotification()  — standard queue for important one-time events
+///   ShowDebounced()     — for rapid updates like cleaning/placement progress.
+///                         Rapid calls on the same channel replace each other
+///                         instead of stacking, then show after a short delay.
 /// </summary>
 public class NotificationSystem : MonoBehaviour
 {
-    /// <summary>Global singleton. Assigned on Awake; null if no instance exists in the scene.</summary>
     public static NotificationSystem Instance { get; private set; }
 
     [Header("UI References")]
-    [Tooltip("Animator controlling popup and disappear animations.")]
     public Animator animator;
-
-    [Tooltip("Text component that displays the notification message.")]
     public TextMeshProUGUI notifText;
 
     [Header("Timing")]
     [Tooltip("Seconds the notification stays fully visible before dismissing.")]
-    public float displayTime = 5f;
+    public float displayTime = 3f;
 
     [Header("Queue Settings")]
-    [Tooltip("Maximum number of pending notifications. Older messages are dropped when full.")]
+    [Tooltip("Maximum pending notifications before dropping new ones.")]
     public int maxQueueSize = 5;
 
     [Header("Notification Messages")]
-    [Tooltip("Maps each NotificationType to a display message. Editable in the Inspector.")]
     public NotificationMessage[] notificationMessages = new NotificationMessage[]
     {
-        new NotificationMessage { type = NotificationType.ItemCollected,    message = "Item collected!" },
-        new NotificationMessage { type = NotificationType.FloodRising,      message = "Flood is Rising!" },
-        new NotificationMessage { type = NotificationType.CheckPhone,       message = "Check your phone for important updates." },
-        new NotificationMessage { type = NotificationType.UseFlashlight,    message = "Use your Flashlight!" },
-        new NotificationMessage { type = NotificationType.TraumaRising,     message = "Your Trauma is Rising!" },
+        new NotificationMessage { type = NotificationType.ItemCollected,     message = "Item collected!" },
+        new NotificationMessage { type = NotificationType.FloodRising,       message = "Flood is Rising!" },
+        new NotificationMessage { type = NotificationType.CheckPhone,        message = "Check your phone for important updates." },
+        new NotificationMessage { type = NotificationType.UseFlashlight,     message = "Use your Flashlight!" },
+        new NotificationMessage { type = NotificationType.TraumaRising,      message = "Your Trauma is Rising!" },
         new NotificationMessage { type = NotificationType.ObjectiveComplete, message = "Objective complete!" }
     };
 
-    // ------------------------------------------------------------------
-    // Private state
-    // ------------------------------------------------------------------
-
     private readonly Dictionary<NotificationType, string> _messageLookup = new();
     private readonly Queue<string> _queue = new();
+    private readonly Dictionary<string, string> _debouncePending = new();
+    private readonly Dictionary<string, Coroutine> _debounceCoroutines = new();
     private bool _isShowing;
 
     // ------------------------------------------------------------------
     // Unity lifecycle
     // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Initialises the singleton and builds the internal message lookup table.
-    /// Disables the component and logs an error if required references are missing.
-    /// </summary>
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
 
         if (!ValidateReferences()) return;
 
         foreach (var entry in notificationMessages)
-        {
             _messageLookup.TryAdd(entry.type, entry.message);
-        }
     }
 
     // ------------------------------------------------------------------
-    // Public API
+    // Public API — standard queue
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Enqueues a notification using a predefined <see cref="NotificationType"/>.
-    /// The message text is resolved from the Inspector configuration.
+    /// Enqueues a notification by type. Use for important one-time events.
     /// </summary>
-    /// <param name="type">The notification type to display.</param>
     public void ShowNotification(NotificationType type)
     {
         if (_messageLookup.TryGetValue(type, out string message))
-        {
             Enqueue(message);
-        }
         else
-        {
-            Debug.LogWarning($"[NotificationSystem] No message registered for type '{type}'. " +
-                             "Add it to the notificationMessages array in the Inspector.");
-        }
+            Debug.LogWarning($"[NotificationSystem] No message for type '{type}'.");
     }
 
     /// <summary>
-    /// Enqueues a notification with an arbitrary string message.
-    /// Use this for dynamic content such as item names or objective titles.
+    /// Enqueues a notification with a custom string. Use for one-time events.
     /// </summary>
-    /// <param name="message">The text to display in the notification.</param>
-    public void ShowNotification(string message)
+    public void ShowNotification(string message) => Enqueue(message);
+
+    // ------------------------------------------------------------------
+    // Public API — debounced (for rapid updates)
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Shows a debounced notification. Rapid calls on the same channelKey
+    /// update the pending message rather than stacking in the queue.
+    /// The notification only fires after <paramref name="delay"/> seconds of silence.
+    ///
+    /// Use this for cleaning progress, item placement, any frequently updating value.
+    ///
+    /// Example:
+    ///   NotificationSystem.Instance.ShowDebounced("cleaning", $"Cleaning: {pct:0}%", 1f);
+    ///   NotificationSystem.Instance.ShowDebounced("placement", $"Restored {n}/{total}", 0.5f);
+    /// </summary>
+    /// <param name="channelKey">Unique string identifying this notification channel.</param>
+    /// <param name="message">Message to display when the debounce settles.</param>
+    /// <param name="delay">Seconds to wait after the last call before showing. Default 1s.</param>
+    public void ShowDebounced(string channelKey, string message, float delay = 1f)
     {
-        Enqueue(message);
+        _debouncePending[channelKey] = message;
+
+        if (_debounceCoroutines.TryGetValue(channelKey, out Coroutine existing) && existing != null)
+            StopCoroutine(existing);
+
+        _debounceCoroutines[channelKey] = StartCoroutine(DebounceTimer(channelKey, delay));
     }
 
     // ------------------------------------------------------------------
     // Static trigger helpers
     // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Triggers a "Flood Rising" notification.
-    /// Call when the flood level increases or crosses a threshold.
-    /// </summary>
+    /// <summary>Triggers a Flood Rising notification.</summary>
     public static void TriggerFloodRising() =>
         Instance?.ShowNotification(NotificationType.FloodRising);
 
-    /// <summary>
-    /// Triggers a "Check Phone" notification.
-    /// Call when a new in-game message arrives or the player enters a relevant area.
-    /// </summary>
+    /// <summary>Triggers a Check Phone notification.</summary>
     public static void TriggerCheckPhone() =>
         Instance?.ShowNotification(NotificationType.CheckPhone);
 
-    /// <summary>
-    /// Triggers a "Use Flashlight" notification.
-    /// Call when the player enters a dark area that requires the flashlight.
-    /// </summary>
+    /// <summary>Triggers a Use Flashlight notification.</summary>
     public static void TriggerUseFlashlight() =>
         Instance?.ShowNotification(NotificationType.UseFlashlight);
 
-    /// <summary>
-    /// Triggers a "Trauma Rising" notification.
-    /// Call when the player's trauma stat crosses a warning threshold.
-    /// </summary>
+    /// <summary>Triggers a Trauma Rising notification.</summary>
     public static void TriggerTraumaRising() =>
         Instance?.ShowNotification(NotificationType.TraumaRising);
 
-    /// <summary>
-    /// Triggers an "Objective Complete" notification.
-    /// If <paramref name="objectiveName"/> is provided, it is included in the message text.
-    /// </summary>
-    /// <param name="objectiveName">Optional name of the completed objective.</param>
+    /// <summary>Triggers an Objective Complete notification with optional name.</summary>
     public static void TriggerObjectiveComplete(string objectiveName = "")
     {
         if (Instance == null) return;
-
-        string message = string.IsNullOrEmpty(objectiveName)
-            ? null
-            : $"Objective '{objectiveName}' complete!";
-
-        if (message != null)
-            Instance.ShowNotification(message);
+        if (!string.IsNullOrEmpty(objectiveName))
+            Instance.ShowNotification($"Objective '{objectiveName}' complete!");
         else
             Instance.ShowNotification(NotificationType.ObjectiveComplete);
     }
 
     // ------------------------------------------------------------------
-    // Private helpers
+    // Private
     // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Adds a message to the notification queue and starts processing if idle.
-    /// Drops the message silently if the queue has reached <see cref="maxQueueSize"/>.
-    /// </summary>
-    /// <param name="message">The message string to enqueue.</param>
+    private IEnumerator DebounceTimer(string channelKey, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (_debouncePending.TryGetValue(channelKey, out string message))
+        {
+            Enqueue(message);
+            _debouncePending.Remove(channelKey);
+        }
+
+        _debounceCoroutines.Remove(channelKey);
+    }
+
     private void Enqueue(string message)
     {
         if (_queue.Count >= maxQueueSize)
@@ -214,26 +187,14 @@ public class NotificationSystem : MonoBehaviour
             StartCoroutine(ProcessQueue());
     }
 
-    /// <summary>
-    /// Validates that required component references are assigned.
-    /// Disables the component and logs an error if any reference is missing.
-    /// </summary>
-    /// <returns><c>true</c> if all references are valid; otherwise <c>false</c>.</returns>
     private bool ValidateReferences()
     {
         if (animator != null && notifText != null) return true;
-
-        Debug.LogError("[NotificationSystem] Missing required references — " +
-                       "assign Animator and TextMeshProUGUI in the Inspector.");
+        Debug.LogError("[NotificationSystem] Missing Animator or TextMeshProUGUI reference.");
         enabled = false;
         return false;
     }
 
-    /// <summary>
-    /// Coroutine that dequeues and displays notifications one at a time.
-    /// Waits one frame after calling <c>Animator.Play</c> before reading the
-    /// clip length, ensuring the animator has transitioned to the new state.
-    /// </summary>
     private IEnumerator ProcessQueue()
     {
         _isShowing = true;
@@ -242,15 +203,12 @@ public class NotificationSystem : MonoBehaviour
         {
             notifText.text = _queue.Dequeue();
 
-            // Play popup animation — wait one frame so the animator transitions
             animator.Play("Notif_Popup", 0, 0f);
             yield return null;
             yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
 
-            // Hold on screen
             yield return new WaitForSeconds(displayTime);
 
-            // Play disappear animation — same one-frame wait
             animator.Play("Notif_Disappear", 0, 0f);
             yield return null;
             yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
