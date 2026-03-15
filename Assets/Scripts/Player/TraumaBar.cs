@@ -1,140 +1,144 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 
-
+/// <summary>
+/// Manages the player's trauma level (0–1) in Level 3.
+/// Trauma rises passively over time and can be reduced by cleaning and restoring objects.
+/// Drives TraumaEffects for visuals and fires notifications at warning thresholds.
+///
+/// Setup:
+///   - Assign traumaBar (Slider), gameOver (GameOverPanel), and traumaEffects in Inspector.
+///   - Call AddTrauma(amount) from other scripts to increase trauma.
+///   - Call ReduceTrauma(amount) when player makes progress (cleaning, placing objects).
+/// </summary>
 public class TraumaBar : MonoBehaviour
 {
+    public static TraumaBar Instance { get; private set; }
 
-    float experience;
-    int traumaLimit;
-
-    [Header("Trauma Settings")]
+    [Header("References")]
     public Slider traumaBar;
     public GameOverPanel gameOver;
+    public TraumaEffects traumaEffects;
 
-    [Header("UI PopUps")]
-    [SerializeField] StatusPopupUI statusPopupUI;
+    [Header("Passive Trauma")]
+    [Tooltip("How much trauma increases per second passively.")]
+    public float passiveRiseRate = 0.005f;
+
+    [Tooltip("Pause passive rise for this many seconds after the player makes progress.")]
+    public float progressGracePeriod = 5f;
 
     [Header("Notification Thresholds")]
-    public float warningThreshold1 = 0.3f; // 30% - First warning
-    public float warningThreshold2 = 0.6f; // 60% - Second warning
-    public float warningThreshold3 = 0.8f; // 80% - Critical warning
+    public float warningThreshold1 = 0.3f;
+    public float warningThreshold2 = 0.6f;
+    public float warningThreshold3 = 0.8f;
 
-    private bool hasWarned30 = false;
-    private bool hasWarned60 = false;
-    private bool hasWarned80 = false;
-    private int lastDisplayedStatus = 0; // 1=FineDamaged, 2=Caution, 3=Danger
+    // ------------------------------------------------------------------
+    // Private state
+    // ------------------------------------------------------------------
 
-    // Use this for initialization
-    void Start()
+    private float _trauma;
+    private bool _gameOverTriggered;
+    private bool _hasWarned30;
+    private bool _hasWarned60;
+    private bool _hasWarned80;
+    private float _lastProgressTime;
+
+    // ------------------------------------------------------------------
+    // Unity lifecycle
+    // ------------------------------------------------------------------
+
+    private void Awake()
     {
-        experience = 0;
-        traumaLimit = 1;
-
-        traumaBar.value = experience;
-        traumaBar.maxValue = traumaLimit;
+        if (Instance != null && Instance != this) { Destroy(this); return; }
+        Instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        _trauma = 0f;
+        traumaBar.value = 0f;
+        traumaBar.maxValue = 1f;
+        traumaEffects?.SetTrauma(0f);
+    }
+
+    private void Update()
+    {
+        if (_gameOverTriggered) return;
+
+        // Passive trauma rise — paused briefly after player makes progress
+        if (Time.time > _lastProgressTime + progressGracePeriod)
         {
-            experience += 0.10f;
-            experience = Mathf.Clamp(experience, 0f, traumaLimit); // Added Clamp for safety
-            traumaBar.value = experience;
-            CheckTraumaThresholds();
+            ModifyTrauma(passiveRiseRate * Time.deltaTime);
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        // Game over — only trigger once
+        if (_trauma >= 1f)
         {
-            experience -= 0.10f;
-            experience = Mathf.Clamp(experience, 0f, traumaLimit); // Added Clamp for safety
-            traumaBar.value = experience;
-            CheckTraumaThresholds();
+            _gameOverTriggered = true;
+            gameOver?.TriggerGameOver();
         }
-        if (experience >= 1)
-        {
-            gameOver.TriggerGameOver();
-        }
+    }
+
+    // ------------------------------------------------------------------
+    // Public API
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Increases trauma by the given amount (0–1 scale).
+    /// Call this from any script that should cause trauma (e.g. flood contact).
+    /// </summary>
+    public void AddTrauma(float amount)
+    {
+        ModifyTrauma(amount);
     }
 
     /// <summary>
-    /// Call this method whenever trauma increases to check for notification thresholds
+    /// Reduces trauma by the given amount (0–1 scale).
+    /// Call this when the player makes progress — cleaning, placing objects, etc.
+    /// Also resets the passive rise grace period so trauma pauses briefly.
     /// </summary>
-    public void AddTrauma(int amount)
+    public void ReduceTrauma(float amount)
     {
-        experience += amount;
-        experience = Mathf.Clamp(experience, 0f, traumaLimit); // Added Clamp for safety
-        traumaBar.value = experience;
-        CheckTraumaThresholds();
+        _lastProgressTime = Time.time;
+        ModifyTrauma(-amount);
     }
 
-    private void CheckTraumaThresholds()
+    // ------------------------------------------------------------------
+    // Private
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Applies a delta to trauma, clamps it, updates the slider, drives effects,
+    /// and checks warning thresholds.
+    /// </summary>
+    private void ModifyTrauma(float delta)
     {
-        float traumaPercent = experience / traumaLimit;
-        int healthEquivalent = Mathf.RoundToInt((1f - traumaPercent) * 100);
+        _trauma = Mathf.Clamp01(_trauma + delta);
+        traumaBar.value = _trauma;
+        traumaEffects?.SetTrauma(_trauma);
+        CheckThresholds();
+    }
 
-        int currentStatus;
-
-        if (healthEquivalent >= 66)
+    /// <summary>
+    /// Fires one-time notifications at 30%, 60%, and 80% trauma thresholds.
+    /// Uses correct percentage values in the message.
+    /// </summary>
+    private void CheckThresholds()
+    {
+        if (_trauma >= warningThreshold3 && !_hasWarned80)
         {
-            currentStatus = 1; // Fine Damaged / Fine Full (66-100)
-            // Note: PopupAnimator is linked to TraumaBar's logic, not StatusPopupUI
-            Debug.Log(currentStatus);
+            _hasWarned80 = true;
+            NotificationSystem.Instance?.ShowNotification("Your sanity is critical! Keep going!");
         }
-        else if (healthEquivalent >= 30)
+        else if (_trauma >= warningThreshold2 && !_hasWarned60)
         {
-            currentStatus = 2; // Caution (30-65)
-            Debug.Log(currentStatus);
+            _hasWarned60 = true;
+            NotificationSystem.Instance?.ShowNotification("Your sanity is deteriorating...");
         }
-        else // healthEquivalent >= 1 && healthEquivalent <= 29
+        else if (_trauma >= warningThreshold1 && !_hasWarned30)
         {
-            currentStatus = 3; // Danger (1-29)
-            Debug.Log(currentStatus);
-        }
-
-        // CORRECT BLOCK: Calls the DisplayHealthPopUp with two arguments ONLY when the status changes
-        if (currentStatus != lastDisplayedStatus)
-        {
-            if (statusPopupUI != null)
-            {
-                // Passing BOTH healthEquivalent (1st arg) and currentStatus (2nd arg)
-                statusPopupUI.DisplayHealthPopUp(healthEquivalent, currentStatus);
-            }
-
-            lastDisplayedStatus = currentStatus;
-        }
-
-        // --- YOUR ORIGINAL THRESHOLD WARNING LOGIC (can be kept or adapted) ---
-        if (traumaPercent >= warningThreshold1 && !hasWarned30)
-        {
-            hasWarned30 = true;
-            Debug.Log("Trauma Warning: 30% reached.");
-            NotificationSystem.Instance.ShowNotification(
-    $"Your trauma level is ({currentStatus:0}%)"
-);
-        }
-        else if (traumaPercent >= warningThreshold2 && !hasWarned60)
-        {
-            hasWarned60 = true;
-            Debug.Log("Trauma Warning: 60% reached.");
-            NotificationSystem.Instance.ShowNotification(
-    $"Your trauma is rising ({currentStatus:0}%)"
-);
-        }
-        else if (traumaPercent >= warningThreshold3 && !hasWarned80)
-        {
-            hasWarned80 = true;
-            Debug.Log("Trauma Warning: 80% reached.");
-
-            NotificationSystem.Instance.ShowNotification(
-    $"Your trauma is rising ({currentStatus:0}%)"
-);
+            _hasWarned30 = true;
+            NotificationSystem.Instance?.ShowNotification("You're feeling uneasy. Keep cleaning.");
         }
     }
 }
