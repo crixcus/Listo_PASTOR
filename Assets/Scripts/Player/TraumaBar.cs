@@ -3,13 +3,17 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Manages the player's trauma level (0–1) in Level 3.
-/// Trauma rises passively over time and can be reduced by cleaning and restoring objects.
-/// Drives TraumaEffects for visuals and fires notifications at warning thresholds.
+///
+/// Trauma behaviour:
+///   - Rises passively over time (constant pressure)
+///   - Reduces slowly when the player stands still (calm = recovery)
+///   - Reduces when the player cleans or restores objects (progress = relief)
+///   - Jumpscare triggers add a large instant spike
+///   - At 100% trauma, game over triggers
 ///
 /// Setup:
-///   - Assign traumaBar (Slider), gameOver (GameOverPanel), and traumaEffects in Inspector.
-///   - Call AddTrauma(amount) from other scripts to increase trauma.
-///   - Call ReduceTrauma(amount) when player makes progress (cleaning, placing objects).
+///   - Assign traumaBar (Slider), gameOver (GameOverPanel), traumaEffects, and playerBody.
+///   - playerBody: the CharacterController or Rigidbody Transform to track movement.
 /// </summary>
 public class TraumaBar : MonoBehaviour
 {
@@ -20,12 +24,25 @@ public class TraumaBar : MonoBehaviour
     public GameOverPanel gameOver;
     public TraumaEffects traumaEffects;
 
-    [Header("Passive Trauma")]
+    [Tooltip("The player's Transform used to detect movement. Assign PlayerHolder.")]
+    public Transform playerBody;
+
+    [Header("Passive Trauma Rise")]
     [Tooltip("How much trauma increases per second passively.")]
     public float passiveRiseRate = 0.005f;
 
-    [Tooltip("Pause passive rise for this many seconds after the player makes progress.")]
+    [Tooltip("Pause passive rise for this many seconds after player makes progress.")]
     public float progressGracePeriod = 5f;
+
+    [Header("Stillness Recovery")]
+    [Tooltip("How many seconds the player must be still before trauma starts reducing.")]
+    public float stillnessDelay = 3f;
+
+    [Tooltip("How much trauma reduces per second while the player is still.")]
+    public float stillnessRecoveryRate = 0.008f;
+
+    [Tooltip("Minimum movement distance per frame to be considered moving.")]
+    public float movementThreshold = 0.01f;
 
     [Header("Notification Thresholds")]
     public float warningThreshold1 = 0.3f;
@@ -43,6 +60,11 @@ public class TraumaBar : MonoBehaviour
     private bool _hasWarned80;
     private float _lastProgressTime;
 
+    // Stillness tracking
+    private Vector3 _lastPosition;
+    private float _stillTimer;
+    private bool _isStill;
+
     // ------------------------------------------------------------------
     // Unity lifecycle
     // ------------------------------------------------------------------
@@ -59,19 +81,28 @@ public class TraumaBar : MonoBehaviour
         traumaBar.value = 0f;
         traumaBar.maxValue = 1f;
         traumaEffects?.SetTrauma(0f);
+
+        if (playerBody != null)
+            _lastPosition = playerBody.position;
     }
 
     private void Update()
     {
         if (_gameOverTriggered) return;
 
-        // Passive trauma rise — paused briefly after player makes progress
-        if (Time.time > _lastProgressTime + progressGracePeriod)
+        TrackStillness();
+
+        if (_isStill)
         {
+            // Player is still — recover trauma slowly
+            ModifyTrauma(-stillnessRecoveryRate * Time.deltaTime);
+        }
+        else if (Time.time > _lastProgressTime + progressGracePeriod)
+        {
+            // Player is moving and no recent progress — trauma rises passively
             ModifyTrauma(passiveRiseRate * Time.deltaTime);
         }
 
-        // Game over — only trigger once
         if (_trauma >= 1f)
         {
             _gameOverTriggered = true;
@@ -84,8 +115,8 @@ public class TraumaBar : MonoBehaviour
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Increases trauma by the given amount (0–1 scale).
-    /// Call this from any script that should cause trauma (e.g. flood contact).
+    /// Increases trauma instantly by the given amount (0–1).
+    /// Use for jumpscares, flood contact, or other traumatic events.
     /// </summary>
     public void AddTrauma(float amount)
     {
@@ -93,9 +124,9 @@ public class TraumaBar : MonoBehaviour
     }
 
     /// <summary>
-    /// Reduces trauma by the given amount (0–1 scale).
-    /// Call this when the player makes progress — cleaning, placing objects, etc.
-    /// Also resets the passive rise grace period so trauma pauses briefly.
+    /// Reduces trauma by the given amount (0–1).
+    /// Also resets the passive rise grace period.
+    /// Use for cleaning progress, object restoration, etc.
     /// </summary>
     public void ReduceTrauma(float amount)
     {
@@ -108,7 +139,32 @@ public class TraumaBar : MonoBehaviour
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Applies a delta to trauma, clamps it, updates the slider, drives effects,
+    /// Tracks whether the player has been still long enough to trigger recovery.
+    /// Uses position delta each frame against a small movement threshold.
+    /// </summary>
+    private void TrackStillness()
+    {
+        if (playerBody == null) return;
+
+        float moved = Vector3.Distance(playerBody.position, _lastPosition);
+        _lastPosition = playerBody.position;
+
+        if (moved > movementThreshold)
+        {
+            // Player moved — reset still timer
+            _stillTimer = 0f;
+            _isStill = false;
+        }
+        else
+        {
+            // Player is standing still — count up
+            _stillTimer += Time.deltaTime;
+            _isStill = _stillTimer >= stillnessDelay;
+        }
+    }
+
+    /// <summary>
+    /// Applies a delta to trauma, clamps, updates UI and effects,
     /// and checks warning thresholds.
     /// </summary>
     private void ModifyTrauma(float delta)
@@ -120,8 +176,7 @@ public class TraumaBar : MonoBehaviour
     }
 
     /// <summary>
-    /// Fires one-time notifications at 30%, 60%, and 80% trauma thresholds.
-    /// Uses correct percentage values in the message.
+    /// Fires one-time notifications at 30%, 60%, and 80% trauma.
     /// </summary>
     private void CheckThresholds()
     {

@@ -11,7 +11,7 @@ public class GameOverPanel : MonoBehaviour
     public float restartDelay = 3f;
     public float fadeDuration = 1.5f;
 
-    private bool isGameOver = false;
+    public bool isGameOver = false;
     private CanvasGroup uiGroup;
 
     void Start()
