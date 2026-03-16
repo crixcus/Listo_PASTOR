@@ -1,48 +1,66 @@
 using UnityEngine;
 
+/// <summary>
+/// Raises the water level over time.
+/// Fires OnFloodComplete once the water reaches max height —
+/// JumpScare tripwires listen for this to activate themselves.
+/// </summary>
 public class WaterRiser : MonoBehaviour
 {
     [Header("Flood Settings")]
-    public float riseSpeed = 0.5f;   // How fast the water rises (units per second)
-    public float maxHeight = 10f;    // Maximum height the water can reach
-    
+    public float riseSpeed = 0.5f;
+    public float maxHeight = 10f;
+
     [Header("Notification Settings")]
-    public float notificationInterval = 10f; // How often to show flood warning (seconds)
-    public float warningHeightThreshold = 2f; // Show warning when water reaches this height
-    
-    private float startY;
-    private float lastNotificationTime = 0f;
-    private bool hasStartedRising = false;
+    public float notificationInterval = 10f;
+    public float warningHeightThreshold = 2f;
+
+    /// <summary>
+    /// Fired once when the water finishes rising and reaches max height.
+    /// JumpScare tripwires subscribe to this to activate.
+    /// </summary>
+    public static event System.Action OnFloodComplete;
+
+    private float _startY;
+    private float _lastNotificationTime;
+    private bool _hasStartedRising;
+    private bool _hasCompleted;
 
     private void Start()
     {
-        startY = transform.position.y;
+        _startY = transform.position.y;
     }
 
     private void Update()
     {
-        // Raise water until it reaches max height
+        if (_hasCompleted) return;
+
         if (transform.position.y < maxHeight)
         {
             transform.position += Vector3.up * riseSpeed * Time.deltaTime;
-            
-            // Trigger initial flood rising notification
-            if (!hasStartedRising)
+
+            // First frame of rising — notify player
+            if (!_hasStartedRising)
             {
-                hasStartedRising = true;
+                _hasStartedRising = true;
                 NotificationSystem.TriggerFloodRising();
             }
-            
-            // Show periodic warnings if water is above threshold
-            if (transform.position.y >= startY + warningHeightThreshold)
+
+            // Periodic warnings while rising
+            if (transform.position.y >= _startY + warningHeightThreshold)
             {
-                if (Time.time - lastNotificationTime >= notificationInterval)
+                if (Time.time - _lastNotificationTime >= notificationInterval)
                 {
                     NotificationSystem.TriggerFloodRising();
-                    lastNotificationTime = Time.time;
+                    _lastNotificationTime = Time.time;
                 }
             }
         }
+        else
+        {
+            // Water has reached max height — activate tripwires
+            _hasCompleted = true;
+            OnFloodComplete?.Invoke();
+        }
     }
 }
-
