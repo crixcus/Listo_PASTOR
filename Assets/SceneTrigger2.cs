@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class sceneTrigger2 : MonoBehaviour
 {
     public GameObject timelineObject;
-    public float timer = 300f;
     public GameObject player;
 
     void OnTriggerEnter(Collider other)
@@ -17,13 +16,12 @@ public class sceneTrigger2 : MonoBehaviour
             timelineObject.SetActive(true);
 
             StartCoroutine(NextLevel());
-            
         }
     }
 
     IEnumerator NextLevel()
     {
-        yield return new WaitForSeconds(timer);
+        yield return new WaitForSeconds(10f);
         player.SetActive(true);
         SceneManager.LoadScene("Level 2");
     }
