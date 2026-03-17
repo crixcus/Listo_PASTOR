@@ -10,10 +10,12 @@
 ///   - Assign placeableLayer to the Placeable layer.
 ///   - No Ghost layer needed — ghosts are detected directly via PlaceableObject.IsAimingAtGhost().
 /// </summary>
+
+
 public class PlacementSystem : MonoBehaviour
 {
     public static PlacementSystem Instance { get; private set; }
-
+    public bool IsCarryingObject => _carriedObject != null;
     [Header("References")]
     [Tooltip("The player's camera transform.")]
     public Transform playerCamera;
@@ -64,7 +66,8 @@ public class PlacementSystem : MonoBehaviour
             MoveHeldObject();
             CheckForGhost();
 
-            if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.E))
+            // Only F to drop/place, E is reserved for cleaning
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 if (_aimingAtGhost)
                     PlaceObject();
@@ -140,9 +143,22 @@ public class PlacementSystem : MonoBehaviour
     /// <summary>Picks up the given object and begins carrying it.</summary>
     private void PickupObject(PlaceableObject placeable)
     {
+        PlayerEquipment equipment = FindObjectOfType<PlayerEquipment>();
+        if (equipment != null)
+            equipment.ForceUnequip();
+
         _carriedObject = placeable;
         _carriedObject.transform.SetParent(holdPoint);
         _carriedObject.OnPickedUp();
+
+        // If it has a MopTool, equip it
+        MopTool mop = placeable.GetComponent<MopTool>();
+        if (mop != null)
+        {
+            PlayerCleaning playerCleaning = FindObjectOfType<PlayerCleaning>();
+            if (playerCleaning != null)
+                playerCleaning.EquipMop(mop);
+        }
     }
 
     /// <summary>Smoothly moves the held object to the hold point.</summary>
@@ -169,16 +185,20 @@ public class PlacementSystem : MonoBehaviour
     /// </summary>
     private void CheckForGhost()
     {
+        if (_carriedObject.holdOnly)
+        {
+            HUDController.instance?.EnableInteractionText("Drop");
+            _aimingAtGhost = false;
+            return;
+        }
+
         Ray ray = new Ray(playerCamera.position, playerCamera.forward);
         bool wasAiming = _aimingAtGhost;
-
         _aimingAtGhost = _carriedObject != null && _carriedObject.IsAimingAtGhost(ray);
 
-        // Only update highlight when state changes
         if (_aimingAtGhost != wasAiming)
         {
             _carriedObject?.SetGhostHighlighted(_aimingAtGhost);
-
             HUDController.instance?.EnableInteractionText(
                 _aimingAtGhost ? "Place here" : "Drop");
         }
@@ -188,6 +208,15 @@ public class PlacementSystem : MonoBehaviour
     private void DropObject()
     {
         if (_carriedObject == null) return;
+
+        // If it has a MopTool, unequip it
+        MopTool mop = _carriedObject.GetComponent<MopTool>();
+        if (mop != null)
+        {
+            PlayerCleaning playerCleaning = FindObjectOfType<PlayerCleaning>();
+            if (playerCleaning != null)
+                playerCleaning.EquipMop(null);
+        }
 
         _carriedObject.transform.SetParent(null);
         _carriedObject.OnDropped();

@@ -40,6 +40,7 @@ public class PlaceableObject : MonoBehaviour
 
     public bool IsPlaced { get; private set; }
     public bool IsBeingCarried { get; private set; }
+    public bool holdOnly = false;
 
     // ------------------------------------------------------------------
     // Unity lifecycle
@@ -54,15 +55,20 @@ public class PlaceableObject : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
 
-        // Save the correct position (where you placed it in the editor)
         _originalPosition = transform.position;
         _originalRotation = transform.rotation;
 
-        // Build the ghost at the original/correct position
+        if (holdOnly)
+        {
+            // Don't fall, don't displace, don't build ghost
+            _rb.isKinematic = true;
+            _rb.useGravity = false;
+            return;
+        }
+
         BuildGhost();
         SetGhostVisible(false);
 
-        // Move object to its displaced position
         if (displacedTransform != null)
         {
             transform.SetPositionAndRotation(
@@ -103,8 +109,19 @@ public class PlaceableObject : MonoBehaviour
     public void OnDropped()
     {
         IsBeingCarried = false;
-        _rb.isKinematic = false;
-        _rb.useGravity = true;
+
+        if (holdOnly)
+        {
+            _rb.isKinematic = false;
+            _rb.useGravity = true;
+            // Unparent first so it drops from current position
+            transform.SetParent(null);
+        }
+        else
+        {
+            _rb.isKinematic = false;
+            _rb.useGravity = true;
+        }
 
         SetGhostVisible(false);
         SetGhostHighlighted(false);
