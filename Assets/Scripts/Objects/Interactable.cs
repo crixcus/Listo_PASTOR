@@ -25,7 +25,7 @@ public class Interactable : MonoBehaviour
         {
             Debug.Log($"Interacted with: {gameObject.name}");
             onInteraction.Invoke();
-            NotificationSystem.Instance.ShowNotification($"Interacted with: {gameObject.name}");
+            // Remove the ShowNotification line entirely
         }
     }
     public void EnableOutline()
