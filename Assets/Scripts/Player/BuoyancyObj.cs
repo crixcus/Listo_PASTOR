@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,10 +35,14 @@ namespace WaterSystem
         private DebugDrawing[] _debugInfo;
         [NonSerialized] public float PercentSubmerged;
 
+        // Set to true by PickupScript when this object is held.
+        // Suspends all buoyancy forces and position overrides while true.
+        [NonSerialized] public bool isHeld = false;
+
         // --- Dynamic Water Tracking ---
         [Header("Water Settings")]
-        public Transform waterTransform;   // assign your rising water object here
-        public float waterRiseSpeed = 1f;  // speed at which object follows water
+        public Transform waterTransform;
+        public float waterRiseSpeed = 1f;
         private float currentWaterHeight;
 
         [ContextMenu("Initialize")]
@@ -114,13 +117,15 @@ namespace WaterSystem
 
         private void Update()
         {
+            // Buoyancy fully suspended while object is held by player
+            if (isHeld) return;
+
 #if STATIC_EVERYTHING
             var dt = 0.0f;
 #else
             var dt = Time.deltaTime;
 #endif
 
-            // Update water height smoothly if water exists
             if (waterTransform != null)
             {
                 float targetHeight = waterTransform.position.y + waterLevelOffset;
@@ -135,8 +140,6 @@ namespace WaterSystem
                         if (waterTransform != null)
                         {
                             float objectBottomY = t.position.y - _voxelBounds.extents.y;
-
-                            // Only move if water intersects object
                             if (objectBottomY < currentWaterHeight)
                             {
                                 var vec = t.position;
@@ -148,31 +151,31 @@ namespace WaterSystem
                         break;
                     }
                 case BuoyancyType.NonPhysicalVoxel:
-                    // Voxel non-physical stays still until water hits it
                     break;
                 case BuoyancyType.Physical:
                 case BuoyancyType.PhysicalVoxel:
                     LocalToWorldJob.CompleteJob(_guid);
                     GetVelocityPoints();
+                    if (waterTransform != null)
+                    {
+                        GerstnerWavesJobs.UpdateSamplePoints(ref _samplePoints, _guid);
+                        GerstnerWavesJobs.GetData(_guid, ref Heights, ref _normals);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
-
-            if (waterTransform != null)
-            {
-                GerstnerWavesJobs.UpdateSamplePoints(ref _samplePoints, _guid);
-                GerstnerWavesJobs.GetData(_guid, ref Heights, ref _normals);
             }
         }
 
         private void FixedUpdate()
         {
-            if (waterTransform == null) return; // no water, do nothing
+            // Buoyancy forces suspended while object is held by player
+            if (isHeld) return;
+
+            if (waterTransform == null) return;
 
             float waterHeight = currentWaterHeight;
 
-            // Only apply buoyancy if water intersects object
             float objectBottomY = transform.position.y - _voxelBounds.extents.y;
             if (objectBottomY >= waterHeight) return;
 
