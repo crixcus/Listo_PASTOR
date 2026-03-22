@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
 /// Raises the water level over time.
-/// Fires OnFloodComplete once the water reaches max height —
+/// Fires OnFloodComplete once the water reaches max height â€”
 /// JumpScare tripwires listen for this to activate themselves.
 /// </summary>
 public class WaterRiser : MonoBehaviour
@@ -37,9 +37,10 @@ public class WaterRiser : MonoBehaviour
 
         if (transform.position.y < maxHeight)
         {
+            // Constant, unvarying crawl â€” no easing, no acceleration
             transform.position += Vector3.up * riseSpeed * Time.deltaTime;
 
-            // First frame of rising — notify player
+            // First frame of rising â€” notify player
             if (!_hasStartedRising)
             {
                 _hasStartedRising = true;
@@ -58,7 +59,7 @@ public class WaterRiser : MonoBehaviour
         }
         else
         {
-            // Water has reached max height — activate tripwires
+            // Water has reached max height â€” activate tripwires
             _hasCompleted = true;
             OnFloodComplete?.Invoke();
         }
