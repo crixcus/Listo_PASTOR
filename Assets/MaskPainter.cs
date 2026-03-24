@@ -111,13 +111,14 @@ public class MaskPainter : MonoBehaviour
     void HandlePainting()
     {
         MopPickupAction mopAction = FindObjectOfType<MopPickupAction>(true);
+        Debug.Log($"mopAction: {mopAction}, heldMop active: {mopAction?.heldMop.gameObject.activeSelf}, IsMaxDirty: {DirtAccumulate.IsMaxDirty}");
         if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
         {
             IsPainting = false;
             return;
         }
 
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.E) && !DirtAccumulate.IsMaxDirty)
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
