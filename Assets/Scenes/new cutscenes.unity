@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -561,6 +561,7 @@ GameObject:
   - component: {fileID: 78911199}
   - component: {fileID: 78911201}
   - component: {fileID: 78911200}
+  - component: {fileID: 78911202}
   m_Layer: 0
   m_Name: mop head
   m_TagString: Untagged
@@ -603,8 +604,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8368722655750445499, guid: 62bb4b9091733164abc5af47a9927c89, type: 3}
-  - {fileID: 8748892135801146194, guid: 62bb4b9091733164abc5af47a9927c89, type: 3}
+  - {fileID: 2100000, guid: 28bb76b7dffab654c8fbb12c5195cc92, type: 2}
+  - {fileID: 2100000, guid: 28bb76b7dffab654c8fbb12c5195cc92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -634,6 +635,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 78911198}
   m_Mesh: {fileID: 5302568919011541938, guid: 62bb4b9091733164abc5af47a9927c89, type: 3}
+--- !u!114 &78911202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78911198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d25f8c8b2229e4ea11f3dc8c86feea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  accumulateSpeed: 0.1
+  maxDirtStrength: 2
 --- !u!1 &96345842
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,8 +1654,9 @@ MonoBehaviour:
   minBrushRadius: 15
   maxBrushRadius: 15
   paintDelay: 0.6
-  completionThreshold: 0.91
+  completionThreshold: 0.93
   progressBar: {fileID: 979575885}
+  cleaningRange: 5
 --- !u!4 &618555475 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3242904501412767619, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
@@ -3776,7 +3792,7 @@ GameObject:
   - component: {fileID: 1600589792}
   - component: {fileID: 1600589791}
   - component: {fileID: 1600589790}
-  - component: {fileID: 1600589789}
+  - component: {fileID: 1600589794}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -3784,20 +3800,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1600589789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600589788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fb743596cc311c418d9a62ac081e06a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 1616389648}
-  cleanSpeed: 0.3
 --- !u!65 &1600589790
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3884,6 +3886,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1600589794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600589788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d25f8c8b2229e4ea11f3dc8c86feea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  accumulateSpeed: 1.5
+  maxDirtStrength: 1
 --- !u!4 &1604423175 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5152541434588307182, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
@@ -5028,11 +5044,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.61
+      value: -0.86
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.39
+      value: 1.92
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 44967b8339196074d92afe7c810701ce, type: 3}
       propertyPath: m_LocalRotation.w

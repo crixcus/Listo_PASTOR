@@ -26,6 +26,13 @@ public class MaskPainter : MonoBehaviour
     public float completionThreshold = 0.8f;
     public Slider progressBar;
 
+
+    [Header("Cleaning Range")]
+    public float cleaningRange = 2.5f;
+
+    public static bool IsPainting { get; private set; }
+
+
     private float initialWhiteAmount;
     private float currentWhiteAmount;
 
@@ -100,23 +107,34 @@ public class MaskPainter : MonoBehaviour
         return Mathf.Clamp01(normalized);
     }
 
+
     void HandlePainting()
     {
+        MopPickupAction mopAction = FindObjectOfType<MopPickupAction>(true);
+        if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
+        {
+            IsPainting = false;
+            return;
+        }
+
         if (Input.GetKey(KeyCode.E))
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, cleaningRange) && hit.collider.gameObject == gameObject)
             {
-                if (hit.collider.gameObject == gameObject)
-                {
-                    Vector2 uv = hit.textureCoord;
-                    float randomRadius = Random.Range(minBrushRadius, maxBrushRadius);
-                    Paint(uv, randomRadius);
-                }
+                IsPainting = true;
+                mopAction.heldMop.SetCleaning(true);
+                Vector2 uv = hit.textureCoord;
+                float randomRadius = Random.Range(minBrushRadius, maxBrushRadius);
+                Paint(uv, randomRadius);
+                return;
             }
         }
+
+        IsPainting = false;
+        mopAction?.heldMop.SetCleaning(false);
     }
 
     void Paint(Vector2 uv, float radius)

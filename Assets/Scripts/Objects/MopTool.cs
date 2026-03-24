@@ -19,6 +19,7 @@ public class MopTool : MonoBehaviour
 
     private Animator _animator;
     private bool _isCleaning;
+    public bool IsCleaning => _isCleaning;
 
     private void Awake()
     {
