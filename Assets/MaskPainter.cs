@@ -26,15 +26,15 @@ public class MaskPainter : MonoBehaviour
     public float completionThreshold = 0.8f;
     public Slider progressBar;
 
-
     [Header("Cleaning Range")]
     public float cleaningRange = 2.5f;
 
     public static bool IsPainting { get; private set; }
 
-
     private float initialWhiteAmount;
     private float currentWhiteAmount;
+    private bool hasNotifiedComplete = false;
+    private float lastNotifiedProgress = -1f;
 
     class Drip
     {
@@ -52,7 +52,6 @@ public class MaskPainter : MonoBehaviour
     List<Drip> drips = new List<Drip>();
     List<PaintJob> paintQueue = new List<PaintJob>();
 
-    // ✅ Prevent duplicate paint jobs
     HashSet<Vector2Int> queuedPixels = new HashSet<Vector2Int>();
 
     void Start()
@@ -82,6 +81,30 @@ public class MaskPainter : MonoBehaviour
     {
         float progress = GetCleaningProgress();
         progressBar.value = progress;
+
+        float percentCleaned = progress * 100f;
+
+        // Only notify when progress changes by at least 1%
+        if (Mathf.Abs(percentCleaned - lastNotifiedProgress) >= 1f)
+        {
+            lastNotifiedProgress = percentCleaned;
+
+            if (NotificationSystem.Instance != null)
+            {
+                NotificationSystem.Instance.ShowDebounced("cleaning", $"Cleaning progress: {percentCleaned:0}%", 3f);
+            }
+        }
+
+        if (progress >= 1f && !hasNotifiedComplete)
+        {
+            hasNotifiedComplete = true;
+            Debug.Log("Surface fully cleaned!");
+
+            if (NotificationSystem.Instance != null)
+            {
+                NotificationSystem.Instance.ShowDebounced("cleaning", "Surface fully cleaned! 100%", 1f);
+            }
+        }
     }
 
     float CountWhitePixels()
@@ -106,7 +129,6 @@ public class MaskPainter : MonoBehaviour
 
         return Mathf.Clamp01(normalized);
     }
-
 
     void HandlePainting()
     {
@@ -166,7 +188,6 @@ public class MaskPainter : MonoBehaviour
 
                         Vector2Int pixelKey = new Vector2Int(px, py);
 
-                        // ✅ Prevent duplicate queue entries
                         if (!queuedPixels.Contains(pixelKey))
                         {
                             queuedPixels.Add(pixelKey);
@@ -178,7 +199,6 @@ public class MaskPainter : MonoBehaviour
                                 executeTime = Time.time + paintDelay
                             });
 
-                            // Drip chance
                             if (Random.value < 0.05f)
                             {
                                 drips.Add(new Drip
@@ -205,7 +225,6 @@ public class MaskPainter : MonoBehaviour
 
                 Color current = maskTexture.GetPixel(x, y);
 
-                // ✅ ONLY count when actually turning white → black
                 if (current.grayscale > 0.9f)
                 {
                     currentWhiteAmount--;
@@ -213,7 +232,6 @@ public class MaskPainter : MonoBehaviour
 
                 maskTexture.SetPixel(x, y, Color.black);
 
-                // ✅ Remove from tracking
                 queuedPixels.Remove(new Vector2Int(x, y));
                 paintQueue.RemoveAt(i);
             }
