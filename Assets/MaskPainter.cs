@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Playables;
 
 public class MaskPainter : MonoBehaviour
 {
     public Camera cam;
     public Texture2D maskTexture;
     public Material material;
+    public PlayableDirector cutsceneDirector;
 
     [Header("Drip Settings")]
     public float dripSpeed = 50f;
@@ -104,6 +106,11 @@ public class MaskPainter : MonoBehaviour
             {
                 NotificationSystem.Instance.ShowDebounced("cleaning", "Surface fully cleaned! 100%", 1f);
             }
+
+            cutsceneDirector.gameObject.SetActive(true);
+
+            // Trigger cutscene
+            cutsceneDirector.Play();
         }
     }
 
