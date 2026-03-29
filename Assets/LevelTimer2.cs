@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelTimer2 : MonoBehaviour
 {
+    public GameObject csTrigger;
+
     [SerializeField] private float delay = 5f;
 
     void Start()
@@ -15,6 +17,6 @@ public class LevelTimer2 : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        SceneManager.LoadScene("Level 3 (Final)");
+        csTrigger.SetActive(true);
     }
 }
