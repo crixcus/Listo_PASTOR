@@ -9,6 +9,7 @@ public class PausePanel : MonoBehaviour
     public GameObject pausePanel;
     public GameObject settingsPanel;
     public GameObject tips;
+    public GameObject PhoneAlert;
 
     [Header("Player Reference")]
     [Tooltip("Assign the PlayerHolder GameObject here.")]
@@ -54,6 +55,8 @@ public class PausePanel : MonoBehaviour
                     settingsPanel.SetActive(false);
                 if (tips != null)
                     tips.SetActive(false);
+                if (PhoneAlert != null)
+                    PhoneAlert.SetActive(false);
                 //LockCursor();
                 //ResumeGame();
             }

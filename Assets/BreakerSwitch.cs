@@ -26,7 +26,7 @@ public class BreakerSwitch : MonoBehaviour
         if (dist <= interactDistance)
         {
             // Press E to use the switch
-            if (Input.GetKeyDown(KeyCode.E) && canUse)
+            if (Input.GetKeyDown(KeyCode.F) && canUse)
             {
                 UseSwitch();
             }
