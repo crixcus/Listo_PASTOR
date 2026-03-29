@@ -83,6 +83,25 @@ public class PlaceableObject : MonoBehaviour
     }
 
     // ------------------------------------------------------------------
+    // Dirt check
+    // ------------------------------------------------------------------
+
+    /// <summary>
+    /// Returns true if the object has no dirt remaining.
+    /// Checks the _DirtStrength property on the object's material.
+    /// </summary>
+    public bool IsClean()
+    {
+        Renderer rend = GetComponent<Renderer>() ?? GetComponentInChildren<Renderer>();
+        if (rend == null) return true;
+
+        Material mat = rend.material;
+        if (!mat.HasProperty("_DirtStrength")) return true;
+
+        return mat.GetFloat("_DirtStrength") <= 0f;
+    }
+
+    // ------------------------------------------------------------------
     // Public API — called by PlacementSystem
     // ------------------------------------------------------------------
 
@@ -131,9 +150,17 @@ public class PlaceableObject : MonoBehaviour
     /// <summary>
     /// Called when the player successfully places this object back.
     /// Snaps it to its original position and locks it permanently.
+    /// Blocked if the object still has dirt remaining.
     /// </summary>
     public void OnPlaced()
     {
+        // Block placement if not clean yet
+        if (!IsClean())
+        {
+            NotificationSystem.Instance?.ShowNotification("Clean the object first!");
+            return;
+        }
+
         IsPlaced = true;
         IsBeingCarried = false;
 
@@ -159,6 +186,7 @@ public class PlaceableObject : MonoBehaviour
     /// <summary>
     /// Returns true if the player's raycast is hitting this object's ghost.
     /// Called every frame by PlacementSystem while this object is being carried.
+    /// Only returns true if the object is clean.
     /// </summary>
     public bool IsAimingAtGhost(Ray ray)
     {

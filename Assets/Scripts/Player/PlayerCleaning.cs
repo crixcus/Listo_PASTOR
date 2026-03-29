@@ -1,4 +1,5 @@
 using UnityEngine;
+
 public class PlayerCleaning : MonoBehaviour
 {
     public Camera playerCamera;
@@ -10,14 +11,13 @@ public class PlayerCleaning : MonoBehaviour
     {
         if (equippedMop == null) return;
 
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetMouseButton(0))
         {
             equippedMop.SetCleaning(true);
             TryClean();
         }
 
-        // Stop animation when E is released
-        if (Input.GetKeyUp(KeyCode.E))
+        if (Input.GetMouseButtonUp(0))
         {
             equippedMop.SetCleaning(false);
         }

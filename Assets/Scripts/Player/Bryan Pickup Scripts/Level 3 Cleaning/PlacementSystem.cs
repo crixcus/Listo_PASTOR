@@ -70,9 +70,16 @@ public class PlacementSystem : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F))
             {
                 if (_aimingAtGhost)
-                    PlaceObject();
+                {
+                    if (_carriedObject != null && !_carriedObject.IsClean())
+                        NotificationSystem.Instance?.ShowDebounced("placement", "The object is still dirty! Clean it first.", 0.2f);
+                    else
+                        PlaceObject();
+                }
                 else
+                {
                     DropObject();
+                }
             }
         }
         else
@@ -130,7 +137,7 @@ public class PlacementSystem : MonoBehaviour
             {
                 HUDController.instance?.EnableInteractionText($"Pick up {placeable.displayName}");
 
-                if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.F))
                     PickupObject(placeable);
 
                 return;
@@ -145,7 +152,10 @@ public class PlacementSystem : MonoBehaviour
     {
         PlayerEquipment equipment = FindObjectOfType<PlayerEquipment>();
         if (equipment != null)
-            equipment.ForceUnequip();
+        {
+            try { equipment.ForceUnequip(); }
+            catch (System.Exception e) { Debug.LogWarning("ForceUnequip failed: " + e.Message); }
+        }
 
         _carriedObject = placeable;
         _carriedObject.transform.SetParent(holdPoint);

@@ -7,10 +7,14 @@ public class DirtCleaner : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.E))
+        MopPickupAction mopAction = FindObjectOfType<MopPickupAction>(true);
+
+        if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
+            return;
+
+        if (Input.GetMouseButton(0))
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 Renderer rend = hit.collider.GetComponent<Renderer>();

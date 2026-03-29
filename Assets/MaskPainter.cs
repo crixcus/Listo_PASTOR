@@ -140,7 +140,7 @@ public class MaskPainter : MonoBehaviour
             return;
         }
 
-        if (Input.GetKey(KeyCode.E) && !DirtAccumulate.IsMaxDirty)
+        if (Input.GetMouseButton(0) && !DirtAccumulate.IsMaxDirty)
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;

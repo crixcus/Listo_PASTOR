@@ -26,7 +26,7 @@ public class DirtAccumulate : MonoBehaviour
 
         // Check if player is aiming at a water object
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        if (Input.GetKey(KeyCode.E) && Physics.Raycast(ray, out RaycastHit hit, waterRange))
+        if (Input.GetMouseButton(0) && Physics.Raycast(ray, out RaycastHit hit, waterRange))
         {
             if (hit.collider.tag.ToLower().Contains("water"))
             {
