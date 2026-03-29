@@ -66,16 +66,18 @@ public class MaskPainter : MonoBehaviour
 
     void Start()
     {
-        // Cache the mop reference once — FindObjectOfType every frame causes issues in builds
         mopAction = FindObjectOfType<MopPickupAction>(true);
-
-        // Use an instanced material so we're not modifying the shared asset on disk.
-        // NOTE: your maskTexture asset MUST have Read/Write Enabled in its import settings.
         instancedMaterial = GetComponent<Renderer>().material;
 
-        Texture2D newMask = new Texture2D(maskTexture.width, maskTexture.height, TextureFormat.RGBA32, false);
+        // Create a runtime copy that stays readable in builds
+        Texture2D newMask = new Texture2D(
+            maskTexture.width,
+            maskTexture.height,
+            TextureFormat.RGBA32,
+            false
+        );
         newMask.SetPixels(maskTexture.GetPixels());
-        newMask.Apply();
+        newMask.Apply(false, false); // ← keeps texture CPU-readable in builds
 
         maskTexture = newMask;
         instancedMaterial.SetTexture("_MaskTexture", maskTexture);

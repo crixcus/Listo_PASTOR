@@ -61540,7 +61540,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1616389648}
   maskTexture: {fileID: 2800000, guid: a2a58a551de314a4c9a96ba3d01b52a5, type: 3}
-  material: {fileID: 2100000, guid: 27a57dbd8a2233d41b6c00e5c240a3b2, type: 2}
   cutsceneDirector: {fileID: 1882467873218139310}
   dripSpeed: 10
   minDripLifeTime: 0.5
@@ -61551,6 +61550,9 @@ MonoBehaviour:
   completionThreshold: 1
   progressBar: {fileID: 979575885}
   cleaningRange: 5
+  paintableLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &614539552 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4263131183391275788, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
