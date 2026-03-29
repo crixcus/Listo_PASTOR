@@ -1,56 +1,39 @@
 using UnityEngine;
 
 /// <summary>
-/// Attach to each candle 3D model in Level 2.
-/// Handles lit/unlit state, flame visuals, point light,
-/// trauma reduction radius, and blowing out after a duration.
-///
-/// Setup:
-///   1. Attach to the candle GameObject
-///   2. Keep existing Interactable component — wire OnInteraction() to Candle.Light()
-///   3. Assign flameParticle, candleLight in Inspector
-///   4. Set traumaReductionRadius and blowOutTime in Inspector
+/// Candle system with water height detection using a referenced sea object.
 /// </summary>
 public class Candle : MonoBehaviour
 {
     [Header("State")]
-    [Tooltip("Start the candle already lit (e.g. for tutorial).")]
     public bool startLit = false;
 
     [Header("Visuals")]
-    [Tooltip("Particle system for the candle flame.")]
     public ParticleSystem flameParticle;
-
-    [Tooltip("Point light on the candle.")]
     public Light candleLight;
 
     [Header("Trauma Reduction")]
-    [Tooltip("Radius within which the player receives trauma reduction.")]
     public float traumaReductionRadius = 5f;
-
-    [Tooltip("How much trauma reduces per second while player is in range.")]
     public float traumaReductionRate = 0.008f;
 
     [Header("Blow Out")]
-    [Tooltip("How long the candle stays lit before blowing out (seconds).")]
     public float blowOutTime = 60f;
-
-    [Tooltip("Seconds before blowing out to warn the player.")]
     public float blowOutWarningTime = 10f;
 
     [Header("Light Flicker")]
-    [Tooltip("How much the light intensity fluctuates.")]
     public float flickerAmount = 0.2f;
-
-    [Tooltip("Speed of the light flicker.")]
     public float flickerSpeed = 8f;
 
     [Header("Interaction")]
-    [Tooltip("Seconds before the 'need a lighter' notification can show again.")]
     public float noLighterNotifCooldown = 3f;
 
-    // ------------------------------------------------------------------
-    // Private state
+    [Header("Water Detection (Sea Reference)")]
+    [Tooltip("Drag your sea / water object here.")]
+    public Transform seaTransform;
+
+    [Tooltip("Offset to adjust detection (use if water surface is slightly above/below pivot).")]
+    public float waterOffset = 0f;
+
     // ------------------------------------------------------------------
 
     public bool IsLit { get; private set; }
@@ -61,8 +44,6 @@ public class Candle : MonoBehaviour
     private Transform _player;
     private float _lastNoLighterNotifTime = -99f;
 
-    // ------------------------------------------------------------------
-    // Unity lifecycle
     // ------------------------------------------------------------------
 
     private void Start()
@@ -77,11 +58,23 @@ public class Candle : MonoBehaviour
         if (startLit)
             Light();
         else
-            Extinguish(silent: true);
+            Extinguish(true);
     }
 
     private void Update()
     {
+        // --- WATER CHECK FIRST ---
+        if (IsLit && seaTransform != null)
+        {
+            float waterHeight = seaTransform.position.y + waterOffset;
+
+            if (transform.position.y <= waterHeight)
+            {
+                Extinguish(false);
+                return;
+            }
+        }
+
         if (!IsLit) return;
 
         // --- Blow out timer ---
@@ -95,7 +88,7 @@ public class Candle : MonoBehaviour
 
         if (_litTimer >= blowOutTime)
         {
-            Extinguish(silent: false);
+            Extinguish(false);
             return;
         }
 
@@ -106,7 +99,7 @@ public class Candle : MonoBehaviour
             candleLight.intensity = _baseIntensity + (flicker * 2f - 1f) * flickerAmount;
         }
 
-        // --- Trauma reduction if player is in range ---
+        // --- Trauma reduction ---
         if (_player != null)
         {
             float distance = Vector3.Distance(transform.position, _player.position);
@@ -116,20 +109,11 @@ public class Candle : MonoBehaviour
     }
 
     // ------------------------------------------------------------------
-    // Public API
-    // ------------------------------------------------------------------
 
-    /// <summary>
-    /// Called via Interactable.OnInteraction() UnityEvent when player presses F.
-    /// Checks if player has the lighter before lighting.
-    /// Shows "need a lighter" notification with a cooldown to prevent spam.
-    /// </summary>
     public void Light()
     {
-        // Can't light without a lighter
         if (!Lighter.PlayerHasLighter)
         {
-            // Only show the notification if cooldown has passed
             if (Time.time - _lastNoLighterNotifTime >= noLighterNotifCooldown)
             {
                 _lastNoLighterNotifTime = Time.time;
@@ -138,7 +122,6 @@ public class Candle : MonoBehaviour
             return;
         }
 
-        // Already lit — do nothing
         if (IsLit) return;
 
         IsLit = true;
@@ -154,9 +137,6 @@ public class Candle : MonoBehaviour
         NotificationSystem.Instance?.ShowNotification("Candle lit. You feel calmer.");
     }
 
-    /// <summary>
-    /// Extinguishes the candle. Called internally when blow out timer expires.
-    /// </summary>
     public void Extinguish(bool silent = false)
     {
         IsLit = false;
@@ -173,8 +153,6 @@ public class Candle : MonoBehaviour
             NotificationSystem.Instance?.ShowNotification("A candle blew out.");
     }
 
-    // ------------------------------------------------------------------
-    // Gizmo
     // ------------------------------------------------------------------
 
     private void OnDrawGizmosSelected()
