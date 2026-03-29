@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -33644,7 +33644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6147202222419672463, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6148591150162379674, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -34996,19 +34996,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.975
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 10.8
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -7.981
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7132663
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalRotation.x
@@ -35016,11 +35016,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.70089316
       objectReference: {fileID: 0}
     - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6405282928388098668, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 88.997
       objectReference: {fileID: 0}
     - target: {fileID: 6406131193023854553, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -56635,10 +56639,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68d25f8c8b2229e4ea11f3dc8c86feea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  accumulateSpeed: 0.07
+  accumulateSpeed: 0.1
   maxDirtStrength: 1.5
   cleanWithWaterSpeed: 0.3
-  waterRange: 4
+  waterRange: 6
 --- !u!1 &88921403
 GameObject:
   m_ObjectHideFlags: 0
@@ -58045,6 +58049,7 @@ GameObject:
   - component: {fileID: 519134868}
   - component: {fileID: 519134870}
   - component: {fileID: 519134869}
+  - component: {fileID: 519134871}
   m_Layer: 0
   m_Name: mop ni dimagiba
   m_TagString: Untagged
@@ -58086,7 +58091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cleaningSpeed: 0.3
-  mopAudio: {fileID: 0}
+  mopAudio: {fileID: 519134871}
 --- !u!95 &519134870
 Animator:
   serializedVersion: 7
@@ -58109,6 +58114,102 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!82 &519134871
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519134867}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 546762a53577b114aa47c23e5bef1bbf, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.176
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &548178558 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4865598838015838851, guid: 11180f589a66469468f66f27a1a0fc22, type: 3}
@@ -58575,7 +58676,7 @@ MonoBehaviour:
   minBrushRadius: 15
   maxBrushRadius: 15
   paintDelay: 0.6
-  completionThreshold: 0.93
+  completionThreshold: 1
   progressBar: {fileID: 979575885}
   cleaningRange: 5
 --- !u!1 &614539552 stripped
@@ -59403,6 +59504,7 @@ MonoBehaviour:
   pausePanel: {fileID: 1645025409}
   settingsPanel: {fileID: 0}
   tips: {fileID: 0}
+  PhoneAlert: {fileID: 0}
   playerHolder: {fileID: 804889952}
 --- !u!4 &817481470 stripped
 Transform:
@@ -59682,7 +59784,7 @@ RectTransform:
   m_Father: {fileID: 996046838}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -61568,10 +61670,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.015
+  m_Radius: 0.008532377
   m_Height: 0.08667974
   m_Direction: 1
-  m_Center: {x: 0, y: 0.044966638, z: 0}
+  m_Center: {x: 0, y: 0.044966638, z: -0.0015146998}
 --- !u!1 &1381012723
 GameObject:
   m_ObjectHideFlags: 0
@@ -62217,7 +62319,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1643246036}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 818d79938f011484199b11b250fb0e63, type: 2}
   m_CullingMode: 0
@@ -63205,7 +63307,7 @@ RectTransform:
   m_Father: {fileID: 22274235}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -66971,7 +67073,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!137 &4203206055556254522
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
