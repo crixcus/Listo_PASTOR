@@ -37,7 +37,7 @@ public class DirtAccumulate : MonoBehaviour
         }
 
         // Accumulate only when painting MaskPainter
-        if (!MaskPainter.IsPainting) return;
+        if (!MaskPainter.IsPainting && !DirtCleaner.IsCleaning) return;
 
         if (current < maxDirtStrength)
         {
