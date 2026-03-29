@@ -108,6 +108,11 @@ public class PlayerInteraction : MonoBehaviour
             currentPickupInteractable.DisableOutline();
             currentPickupInteractable = null;
         }
+        if (currentInteractableItem != null)
+        {
+            currentInteractableItem.DisableOutline();
+            currentInteractableItem = null;  
+        }
     }
 
     void OnDrawGizmos()

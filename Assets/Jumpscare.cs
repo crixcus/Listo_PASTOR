@@ -19,7 +19,7 @@ public class JumpScare : MonoBehaviour
     public float traumaAmount = 0.35f;
 
     [Tooltip("1 in X chance of triggering. 3 = 33% chance, 2 = 50%, etc.")]
-    public int chance = 3;
+    public int chance = 2;
 
     private bool _isActive = false;
     private bool _hasRolled = false;

@@ -3,8 +3,11 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
+
 public class InteractableItems : MonoBehaviour
 {
+    public static int GlobalCounter { get; private set; } = 0;
+
     // para sa outline component
     private Outline outline;
 
@@ -20,9 +23,21 @@ public class InteractableItems : MonoBehaviour
     public GameObject items;
     public GameObject Bag;
     public int objCounter = 0;
+    public GameObject pickupText;
+
+    public GameObject playerHolder;
+
+    private BasicMovements _basicMovements;
+    private PlayerInteraction _playerInteraction;
 
     private void Start()
     {
+        if (playerHolder != null)
+        {
+            _basicMovements = playerHolder.GetComponent<BasicMovements>();
+            _playerInteraction = playerHolder.GetComponent<PlayerInteraction>();
+        }
+
         outline = GetComponent<Outline>();
         DisableOutline();
     }
@@ -34,12 +49,13 @@ public class InteractableItems : MonoBehaviour
         {
             Debug.Log($"Interacted with: {gameObject.name}");
             objCounter++;
+            GlobalCounter++;
             showPanel();
             onInteraction.Invoke();
-            if (objCounter == 11)
-            {
-                SceneManager.LoadScene("Level 2");
-            }
+            //if (objCounter == 11)
+            //{
+            //    SceneManager.LoadScene("Level 2");
+            //}
         }
     }
 
@@ -58,15 +74,22 @@ public class InteractableItems : MonoBehaviour
     public void ResumeGame()
     {
         Time.timeScale = 1f;
-        
+        pickupText.SetActive(true);
+
         isPaused = false;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (_basicMovements != null) _basicMovements.enabled = true;
+        if (_playerInteraction != null) _playerInteraction.enabled = true;
+        LockCursor();
 
         itemPanel.SetActive(false);
 
         items.SetActive(true);
+
+        if (objCounter > 10)
+        {
+            SceneManager.LoadScene("Level 2");
+        }
     }
 
     public void Gather()
@@ -76,12 +99,28 @@ public class InteractableItems : MonoBehaviour
 
     public void showPanel()
     {
+        pickupText.SetActive(false);
         itemPanel.SetActive (true);
+
+        if (_basicMovements != null) _basicMovements.enabled = false;
+        if (_playerInteraction != null) _playerInteraction.enabled = false;
+        UnlockCursor();
 
         Time.timeScale = 0f;
 
         isPaused = true;
 
+        Cursor.visible = true;
+    }
+
+    private void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void UnlockCursor()
+    {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }

@@ -22,7 +22,9 @@ public class TraumaBar : MonoBehaviour
     [Header("References")]
     public Slider traumaBar;
     public GameOverPanel gameOver;
+    public GameOverWater gameOverW;
     public TraumaEffects traumaEffects;
+    public WaterTraumaTrigger waterTrauma;
 
     [Tooltip("The player's Transform used to detect movement. Assign PlayerHolder.")]
     public Transform playerBody;
@@ -53,7 +55,7 @@ public class TraumaBar : MonoBehaviour
     // Private state
     // ------------------------------------------------------------------
 
-    private float _trauma;
+    public float _trauma;
     private bool _gameOverTriggered;
     private bool _hasWarned30;
     private bool _hasWarned60;
@@ -105,8 +107,17 @@ public class TraumaBar : MonoBehaviour
 
         if (_trauma >= 1f)
         {
-            _gameOverTriggered = true;
-            gameOver?.TriggerGameOver();
+            if (waterTrauma._headUnderwater)
+            {
+                _gameOverTriggered = true;
+                gameOverW.TriggerGameOver();
+            }
+            else
+            {
+                _gameOverTriggered = true;
+                gameOver?.TriggerGameOver();
+            }
+            
         }
     }
 

@@ -15,6 +15,6 @@ public class LevelTimer2 : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        SceneManager.LoadScene("Level 3");
+        SceneManager.LoadScene("Level 3 (Final)");
     }
 }

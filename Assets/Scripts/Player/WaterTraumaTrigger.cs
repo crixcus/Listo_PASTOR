@@ -124,7 +124,7 @@ public class WaterTraumaTrigger : MonoBehaviour
     private BoxCollider _collider;
 
     /// <summary>Tracks whether the player's head is currently below water.</summary>
-    private bool _headUnderwater = false;
+    public bool _headUnderwater = false;
 
     /// <summary>Current water surface Y position, updated every frame from WaterRiser.</summary>
     private float _waterSurfaceY = 0f;
