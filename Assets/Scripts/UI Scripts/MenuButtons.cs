@@ -47,7 +47,7 @@ public class MenuButtons : MonoBehaviour
     }
     public void Ep3Button()
     {
-        playSceneName = "Level 3";
+        playSceneName = "Level 3 (Final)";
         PlayEpisode();
 
     }

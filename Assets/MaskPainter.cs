@@ -8,7 +8,6 @@ public class MaskPainter : MonoBehaviour
 {
     public Camera cam;
     public Texture2D maskTexture;
-    public Material material;
     public PlayableDirector cutsceneDirector;
 
     [Header("Drip Settings")]
@@ -31,12 +30,22 @@ public class MaskPainter : MonoBehaviour
     [Header("Cleaning Range")]
     public float cleaningRange = 2.5f;
 
+    [Header("Layer Mask")]
+    public LayerMask paintableLayerMask = ~0; // default: all layers; set to your surface layer in the Inspector
+
     public static bool IsPainting { get; private set; }
+
+    // Cached references — never use FindObjectOfType in Update
+    private MopPickupAction mopAction;
+    private Material instancedMaterial;
 
     private float initialWhiteAmount;
     private float currentWhiteAmount;
     private bool hasNotifiedComplete = false;
     private float lastNotifiedProgress = -1f;
+
+    // Dirty flag — only call maskTexture.Apply() when pixels actually changed
+    private bool pixelsModifiedThisFrame = false;
 
     class Drip
     {
@@ -53,17 +62,23 @@ public class MaskPainter : MonoBehaviour
 
     List<Drip> drips = new List<Drip>();
     List<PaintJob> paintQueue = new List<PaintJob>();
-
     HashSet<Vector2Int> queuedPixels = new HashSet<Vector2Int>();
 
     void Start()
     {
+        // Cache the mop reference once — FindObjectOfType every frame causes issues in builds
+        mopAction = FindObjectOfType<MopPickupAction>(true);
+
+        // Use an instanced material so we're not modifying the shared asset on disk.
+        // NOTE: your maskTexture asset MUST have Read/Write Enabled in its import settings.
+        instancedMaterial = GetComponent<Renderer>().material;
+
         Texture2D newMask = new Texture2D(maskTexture.width, maskTexture.height, TextureFormat.RGBA32, false);
         newMask.SetPixels(maskTexture.GetPixels());
         newMask.Apply();
 
         maskTexture = newMask;
-        material.SetTexture("_MaskTexture", maskTexture);
+        instancedMaterial.SetTexture("_MaskTexture", maskTexture);
 
         initialWhiteAmount = CountWhitePixels();
         currentWhiteAmount = initialWhiteAmount;
@@ -71,12 +86,16 @@ public class MaskPainter : MonoBehaviour
 
     void Update()
     {
+        pixelsModifiedThisFrame = false;
+
         HandlePainting();
         UpdateDrips();
         ProcessPaintQueue();
         UpdateProgressUI();
 
-        maskTexture.Apply();
+        // Only upload texture data to the GPU when something actually changed this frame
+        if (pixelsModifiedThisFrame)
+            maskTexture.Apply();
     }
 
     void UpdateProgressUI()
@@ -108,8 +127,6 @@ public class MaskPainter : MonoBehaviour
             }
 
             cutsceneDirector.gameObject.SetActive(true);
-
-            // Trigger cutscene
             cutsceneDirector.Play();
         }
     }
@@ -139,8 +156,7 @@ public class MaskPainter : MonoBehaviour
 
     void HandlePainting()
     {
-        MopPickupAction mopAction = FindObjectOfType<MopPickupAction>(true);
-        Debug.Log($"mopAction: {mopAction}, heldMop active: {mopAction?.heldMop.gameObject.activeSelf}, IsMaxDirty: {DirtAccumulate.IsMaxDirty}");
+        // mopAction was cached in Start — if it's null, bail out safely
         if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
         {
             IsPainting = false;
@@ -152,7 +168,9 @@ public class MaskPainter : MonoBehaviour
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, cleaningRange) && hit.collider.gameObject == gameObject)
+            // Use the layer mask to avoid hitting unintended colliders in builds
+            if (Physics.Raycast(ray, out hit, cleaningRange, paintableLayerMask) &&
+                hit.collider.gameObject == gameObject)
             {
                 IsPainting = true;
                 mopAction.heldMop.SetCleaning(true);
@@ -164,7 +182,7 @@ public class MaskPainter : MonoBehaviour
         }
 
         IsPainting = false;
-        mopAction?.heldMop.SetCleaning(false);
+        mopAction.heldMop.SetCleaning(false);
     }
 
     void Paint(Vector2 uv, float radius)
@@ -238,6 +256,7 @@ public class MaskPainter : MonoBehaviour
                 }
 
                 maskTexture.SetPixel(x, y, Color.black);
+                pixelsModifiedThisFrame = true;
 
                 queuedPixels.Remove(new Vector2Int(x, y));
                 paintQueue.RemoveAt(i);
@@ -273,6 +292,7 @@ public class MaskPainter : MonoBehaviour
                 {
                     currentWhiteAmount--;
                     maskTexture.SetPixel(px, py, Color.black);
+                    pixelsModifiedThisFrame = true;
                 }
             }
         }
