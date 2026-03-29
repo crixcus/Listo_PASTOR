@@ -82,3 +82,4 @@ public class GameOverPanel : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
+

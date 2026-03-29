@@ -13,6 +13,7 @@ public class Scene2OutroTrigger : MonoBehaviour
             outroLevel2.gameObject.SetActive(true);
 
             outroLevel2.Play();
+
         }
     }
 }
