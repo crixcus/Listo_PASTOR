@@ -8,6 +8,7 @@ public class PausePanel : MonoBehaviour
     [Header("UI Elements")]
     public GameObject pausePanel;
     public GameObject settingsPanel;
+    public GameObject tips;
 
     [Header("Player Reference")]
     [Tooltip("Assign the PlayerHolder GameObject here.")]
@@ -51,8 +52,10 @@ public class PausePanel : MonoBehaviour
             {
                 if (settingsPanel != null)
                     settingsPanel.SetActive(false);
-                LockCursor();
-                ResumeGame();
+                if (tips != null)
+                    tips.SetActive(false);
+                //LockCursor();
+                //ResumeGame();
             }
             else
             {
@@ -113,6 +116,11 @@ public class PausePanel : MonoBehaviour
         UnlockCursor();
         pausePanel.SetActive(false);
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void TipsPanel()
+    {
+        tips.SetActive(true);
     }
 
     // ------------------------------------------------------------------
