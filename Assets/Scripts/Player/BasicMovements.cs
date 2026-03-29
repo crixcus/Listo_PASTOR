@@ -22,12 +22,16 @@ public class BasicMovements : MonoBehaviour
     [SerializeField] private float maxLookAngle = 80f;
 
     [Header("Water Slow")]
-    [Tooltip("Speed multiplier when in flood water. 0.5 = half speed.")]
+    [Tooltip("Speed multiplier when in flood water.")]
     [Range(0.1f, 1f)]
     public float waterSpeedMultiplier = 0.4f;
 
-    [Tooltip("How smoothly the slow effect fades in and out.")]
+    [Tooltip("How smoothly speed transitions in and out.")]
     public float slowTransitionSpeed = 3f;
+
+    // ------------------------------------------------------------------
+    // Private state
+    // ------------------------------------------------------------------
 
     private CharacterController controller;
     private PlayerInput playerInput;
@@ -42,9 +46,15 @@ public class BasicMovements : MonoBehaviour
     private bool isSprinting;
     private float cameraPitch = 0f;
 
-    // Water slow state
+    // Combined multiplier from water slow + stamina exhaustion
+    // Both systems set their own target and the lowest one wins
+    private float _waterMultiplier = 1f;
+    private float _staminaMultiplier = 1f;
     private float _currentSpeedMultiplier = 1f;
-    private float _targetSpeedMultiplier = 1f;
+
+    // ------------------------------------------------------------------
+    // Unity lifecycle
+    // ------------------------------------------------------------------
 
     private void Awake()
     {
@@ -78,7 +88,6 @@ public class BasicMovements : MonoBehaviour
 
     private void Update()
     {
-        // Ground check
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -87,38 +96,31 @@ public class BasicMovements : MonoBehaviour
         bool isMoving = moveInput.magnitude > 0.1f;
         animator.SetBool("isMoving", isMoving);
 
-        // Read input
         moveInput = moveAction.ReadValue<Vector2>();
         isSprinting = sprintAction.IsPressed();
 
-        // Mouse look
         Vector2 lookInput = lookAction.ReadValue<Vector2>();
-        float mouseX = lookInput.x * mouseSensitivity;
-        float mouseY = lookInput.y * mouseSensitivity;
+        transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
 
-        transform.Rotate(Vector3.up * mouseX);
-
-        cameraPitch -= mouseY;
+        cameraPitch -= lookInput.y * mouseSensitivity;
         cameraPitch = Mathf.Clamp(cameraPitch, -maxLookAngle, maxLookAngle);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
 
-        // Smoothly transition speed multiplier
+        // Combined multiplier — use the lowest active multiplier
+        float targetMultiplier = Mathf.Min(_waterMultiplier, _staminaMultiplier);
         _currentSpeedMultiplier = Mathf.Lerp(
             _currentSpeedMultiplier,
-            _targetSpeedMultiplier,
+            targetMultiplier,
             Time.deltaTime * slowTransitionSpeed
         );
 
-        // Movement — apply speed multiplier
         float currentSpeed = (isSprinting ? sprintSpeed : walkSpeed) * _currentSpeedMultiplier;
         Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-        // Jumping
         if (jumpAction.triggered && isGrounded)
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
-        // Gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
@@ -128,11 +130,19 @@ public class BasicMovements : MonoBehaviour
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Called by WaterTraumaTrigger when the player enters or exits the water.
-    /// Smoothly transitions the player's speed to the water slow multiplier.
+    /// Called by WaterTraumaTrigger when player enters or exits flood water.
     /// </summary>
     public void SetInWater(bool inWater)
     {
-        _targetSpeedMultiplier = inWater ? waterSpeedMultiplier : 1f;
+        _waterMultiplier = inWater ? waterSpeedMultiplier : 1f;
+    }
+
+    /// <summary>
+    /// Called by StaminaSystem when player becomes exhausted or recovers.
+    /// Multiplier stacks with water slow independently.
+    /// </summary>
+    public void SetStaminaMultiplier(float multiplier)
+    {
+        _staminaMultiplier = multiplier;
     }
 }

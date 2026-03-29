@@ -2,11 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Attached to the mop GameObject. Handles cleaning logic, animation,
-/// and mopping sound playback.
-///
-/// Setup:
-///   - Assign mopAudio to a GameObject with an AudioSource (your mopping sound).
-///   - Make sure the AudioSource has Loop checked for continuous mopping sound.
+/// and mopping sound playback. Applies stamina multiplier from StaminaSystem
+/// to reduce cleaning effectiveness when the player is exhausted.
 /// </summary>
 public class MopTool : MonoBehaviour
 {
@@ -19,6 +16,8 @@ public class MopTool : MonoBehaviour
 
     private Animator _animator;
     private bool _isCleaning;
+
+    /// <summary>Whether the player is currently mopping. Read by StaminaSystem.</summary>
     public bool IsCleaning => _isCleaning;
 
     private void Awake()
@@ -27,27 +26,30 @@ public class MopTool : MonoBehaviour
     }
 
     /// <summary>
-    /// Cleans the target CleanableObject by the cleaning speed this frame.
+    /// Cleans the target CleanableObject. Applies stamina multiplier so
+    /// cleaning slows down when the player is exhausted.
     /// </summary>
     public void CleanTarget(CleanableObject target)
     {
-        target.Clean(cleaningSpeed);
+        float multiplier = StaminaSystem.Instance != null
+            ? StaminaSystem.Instance.GetCleanMultiplier()
+            : 1f;
+
+        target.Clean(cleaningSpeed * multiplier);
     }
 
     /// <summary>
-    /// Sets the cleaning state — drives the animator and starts/stops the mop sound.
-    /// Called by PlayerCleaning when the player starts or stops mopping.
+    /// Sets the cleaning state — drives animator and mop audio.
+    /// Called by PlayerCleaning when player starts or stops mopping.
     /// </summary>
     public void SetCleaning(bool isCleaning)
     {
         if (_isCleaning == isCleaning) return;
         _isCleaning = isCleaning;
 
-        // Drive animation
         if (_animator != null)
             _animator.SetBool("isCleaning", isCleaning);
 
-        // Drive audio
         if (mopAudio == null) return;
 
         if (isCleaning && !mopAudio.isPlaying)
