@@ -5,12 +5,17 @@ public class DirtCleaner : MonoBehaviour
     public Camera cam;
     public float cleanSpeed = 1.5f;
 
+    public static bool IsCleaning { get; private set; }
+
     void Update()
     {
         MopPickupAction mopAction = FindObjectOfType<MopPickupAction>(true);
 
         if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
+        {
+            IsCleaning = false;
             return;
+        }
 
         if (Input.GetMouseButton(0))
         {
@@ -28,10 +33,14 @@ public class DirtCleaner : MonoBehaviour
                         {
                             current -= cleanSpeed * Time.deltaTime;
                             mat.SetFloat("_DirtStrength", Mathf.Clamp01(current));
+                            IsCleaning = true;
+                            return;
                         }
                     }
                 }
             }
         }
+
+        IsCleaning = false;
     }
 }
