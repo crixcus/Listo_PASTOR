@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class DirtAccumulate : MonoBehaviour
 {
@@ -6,23 +7,36 @@ public class DirtAccumulate : MonoBehaviour
     public float maxDirtStrength = 1f;
     public float cleanWithWaterSpeed = 2f;
     public float waterRange = 3f;
+    private float current = 1f;
 
     private MopTool _mopTool;
+    private RagTool _ragTool;
     private Renderer _renderer;
 
-    public static bool IsMaxDirty { get; set; }
+    public static bool IsMopMaxDirty { get; set; }
+    public static bool IsRagMaxDirty { get; set; }
+
+    // Keep this for any existing code that references IsMaxDirty
+    public static bool IsMaxDirty => IsMopMaxDirty || IsRagMaxDirty;
 
     void Start()
     {
+        IsMopMaxDirty = false;
+        IsRagMaxDirty = false;
         _mopTool = GetComponentInParent<MopTool>();
+        _ragTool = GetComponentInParent<RagTool>();
         _renderer = GetComponent<Renderer>();
+        foreach (Material mat in _renderer.materials)
+            if (mat.HasProperty("_DirtStrength"))
+                mat.SetFloat("_DirtStrength", current);
     }
 
     void Update()
     {
-        if (_mopTool == null || _renderer == null) return;
+        if (_renderer == null) return;
+        if (_mopTool == null && _ragTool == null) return;
 
-        float current = GetDirtStrength();
+        current = GetDirtStrength();
 
         // Check if player is aiming at a water object
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
@@ -31,28 +45,44 @@ public class DirtAccumulate : MonoBehaviour
             if (hit.collider.tag.ToLower().Contains("water"))
             {
                 ReduceDirt();
-                IsMaxDirty = false;
+                if (_mopTool != null) IsMopMaxDirty = false;
+                if (_ragTool != null) IsRagMaxDirty = false;
                 return;
             }
         }
 
-        // Accumulate only when painting MaskPainter
-        if (!MaskPainter.IsPainting && !DirtCleaner.IsCleaning) return;
-
-        if (current < maxDirtStrength)
+        // Mop dirt accumulation
+        if (_mopTool != null && MaskPainter.IsPainting)
         {
-            SetDirtStrength(current + accumulateSpeed * Time.deltaTime);
-            IsMaxDirty = false;
+            if (current < maxDirtStrength)
+            {
+                SetDirtStrength(current + accumulateSpeed * Time.deltaTime);
+                IsMopMaxDirty = false;
+            }
+            else
+            {
+                IsMopMaxDirty = true;
+            }
         }
-        else
+
+        // Rag dirt accumulation
+        if (_ragTool != null && DirtCleaner.IsCleaning)
         {
-            IsMaxDirty = true;
+            if (current < maxDirtStrength)
+            {
+                SetDirtStrength(current + accumulateSpeed * Time.deltaTime);
+                IsRagMaxDirty = false;
+            }
+            else
+            {
+                IsRagMaxDirty = true;
+            }
         }
     }
 
     void ReduceDirt()
     {
-        float current = GetDirtStrength();
+         current = GetDirtStrength();
         SetDirtStrength(current - cleanWithWaterSpeed * Time.deltaTime);
     }
 

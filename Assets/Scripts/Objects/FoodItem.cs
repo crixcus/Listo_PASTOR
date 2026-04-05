@@ -36,7 +36,7 @@ public class FoodItem : MonoBehaviour
 
         if (isLookingAtThis)
         {
-            if (Input.GetKey(KeyCode.E))
+            if (Input.GetKey(KeyCode.F))
             {
                 if (!_isEating)
                     StartEating();
