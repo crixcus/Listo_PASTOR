@@ -4,22 +4,28 @@ public class PlayerCleaning : MonoBehaviour
 {
     public Camera playerCamera;
     public float cleanRange = 3f;
-    [HideInInspector]
-    public MopTool equippedMop;
+
+    [HideInInspector] public MopTool equippedMop;
+    [HideInInspector] public RagTool equippedRag;
 
     void Update()
     {
-        if (equippedMop == null) return;
+        bool mopActive = equippedMop != null && equippedMop.gameObject.activeSelf;
+        bool ragActive = equippedRag != null && equippedRag.gameObject.activeSelf;
+
+        if (!mopActive && !ragActive) return;
 
         if (Input.GetMouseButton(0))
         {
-            equippedMop.SetCleaning(true);
-            TryClean();
+            if (mopActive) equippedMop.SetCleaning(true);
+            if (ragActive) equippedRag.SetCleaning(true);
+            if (ragActive) TryClean();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            equippedMop.SetCleaning(false);
+            equippedMop?.SetCleaning(false);
+            equippedRag?.SetCleaning(false);
         }
     }
 
@@ -31,7 +37,7 @@ public class PlayerCleaning : MonoBehaviour
             CleanableObject cleanable = hit.collider.GetComponent<CleanableObject>();
             if (cleanable != null && !cleanable.IsClean)
             {
-                equippedMop.CleanTarget(cleanable);
+                equippedRag.CleanTarget(cleanable);
             }
         }
     }
@@ -39,5 +45,10 @@ public class PlayerCleaning : MonoBehaviour
     public void EquipMop(MopTool mop)
     {
         equippedMop = mop;
+    }
+
+    public void EquipRag(RagTool rag)
+    {
+        equippedRag = rag;
     }
 }

@@ -6,6 +6,10 @@ using UnityEngine.Playables;
 
 public class MaskPainter : MonoBehaviour
 {
+    // 1. Expose material directly
+    public Material material;
+    public MopPickupAction mopAction;
+
     public Camera cam;
     public Texture2D maskTexture;
     public PlayableDirector cutsceneDirector;
@@ -35,9 +39,6 @@ public class MaskPainter : MonoBehaviour
 
     public static bool IsPainting { get; private set; }
 
-    // Cached references — never use FindObjectOfType in Update
-    private MopPickupAction mopAction;
-    private Material instancedMaterial;
 
     private float initialWhiteAmount;
     private float currentWhiteAmount;
@@ -66,21 +67,12 @@ public class MaskPainter : MonoBehaviour
 
     void Start()
     {
-        mopAction = FindObjectOfType<MopPickupAction>(true);
-        instancedMaterial = GetComponent<Renderer>().material;
-
-        // Create a runtime copy that stays readable in builds
-        Texture2D newMask = new Texture2D(
-            maskTexture.width,
-            maskTexture.height,
-            TextureFormat.RGBA32,
-            false
-        );
+        Texture2D newMask = new Texture2D(maskTexture.width, maskTexture.height, TextureFormat.RGBA32, false);
         newMask.SetPixels(maskTexture.GetPixels());
-        newMask.Apply(false, false); // ← keeps texture CPU-readable in builds
+        newMask.Apply();
 
         maskTexture = newMask;
-        instancedMaterial.SetTexture("_MaskTexture", maskTexture);
+        material.SetTexture("_MaskTexture", maskTexture);
 
         initialWhiteAmount = CountWhitePixels();
         currentWhiteAmount = initialWhiteAmount;
@@ -88,16 +80,12 @@ public class MaskPainter : MonoBehaviour
 
     void Update()
     {
-        pixelsModifiedThisFrame = false;
 
         HandlePainting();
         UpdateDrips();
         ProcessPaintQueue();
         UpdateProgressUI();
-
-        // Only upload texture data to the GPU when something actually changed this frame
-        if (pixelsModifiedThisFrame)
-            maskTexture.Apply();
+        maskTexture.Apply();
     }
 
     void UpdateProgressUI()
@@ -147,35 +135,52 @@ public class MaskPainter : MonoBehaviour
         return count;
     }
 
+    // Add this field
+    private float externalCleanedAmount = 0f;
+
+    // Add this method — called by DirtCleaner when it cleans something
+    public void AddExternalProgress(float amount)
+    {
+        externalCleanedAmount += amount;
+    }
+
+    // Modify GetCleaningProgress to include external progress
     public float GetCleaningProgress()
     {
-        float cleaned = initialWhiteAmount - currentWhiteAmount;
+        float cleaned = (initialWhiteAmount - currentWhiteAmount) + externalCleanedAmount;
         float progress = cleaned / initialWhiteAmount;
         float normalized = progress / completionThreshold;
-
         return Mathf.Clamp01(normalized);
     }
 
     void HandlePainting()
     {
-        // mopAction was cached in Start — if it's null, bail out safely
-        if (mopAction == null || !mopAction.heldMop.gameObject.activeSelf)
+        if (mopAction == null)
         {
             IsPainting = false;
             return;
         }
 
-        if (Input.GetMouseButton(0) && !DirtAccumulate.IsMaxDirty)
+        bool mopActive = mopAction.heldMop != null && mopAction.heldMop.gameObject.activeSelf;
+
+        if (!mopActive)
+        {
+            IsPainting = false;
+            mopAction.heldMop?.SetCleaning(false);
+            return;
+        }
+
+        if (Input.GetMouseButton(0) && !DirtAccumulate.IsMopMaxDirty)
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            // Use the layer mask to avoid hitting unintended colliders in builds
             if (Physics.Raycast(ray, out hit, cleaningRange, paintableLayerMask) &&
                 hit.collider.gameObject == gameObject)
             {
                 IsPainting = true;
                 mopAction.heldMop.SetCleaning(true);
+
                 Vector2 uv = hit.textureCoord;
                 float randomRadius = Random.Range(minBrushRadius, maxBrushRadius);
                 Paint(uv, randomRadius);
@@ -184,7 +189,7 @@ public class MaskPainter : MonoBehaviour
         }
 
         IsPainting = false;
-        mopAction.heldMop.SetCleaning(false);
+        mopAction.heldMop?.SetCleaning(false);
     }
 
     void Paint(Vector2 uv, float radius)

@@ -1,60 +1,36 @@
 ﻿using UnityEngine;
-
-/// <summary>
-/// Manages the object restoration mechanic in Level 3.
-/// Attach to PlayerHolder alongside PlayerInteraction.
-///
-/// Setup:
-///   - Assign playerCamera and holdPoint in the Inspector.
-///   - holdPoint: empty child Transform in front of the camera (Z = 1.5).
-///   - Assign placeableLayer to the Placeable layer.
-///   - No Ghost layer needed — ghosts are detected directly via PlaceableObject.IsAimingAtGhost().
-/// </summary>
-
+using UnityEngine.Animations.Rigging;
 
 public class PlacementSystem : MonoBehaviour
 {
+    public Rig mopRig;
+    public Rig ragRig;
+    public Rig holdPointRig;
+    public DirtCleaner dirtCleaner;
+    public MopPickupAction mopAction;
+
     public static PlacementSystem Instance { get; private set; }
     public bool IsCarryingObject => _carriedObject != null;
-    [Header("References")]
-    [Tooltip("The player's camera transform.")]
-    public Transform playerCamera;
 
-    [Tooltip("Empty transform in front of the camera where the held object floats.")]
+    [Header("References")]
+    public Transform playerCamera;
     public Transform holdPoint;
 
     [Header("Interaction Settings")]
-    [Tooltip("Max distance to pick up a placeable object.")]
     public float pickupRange = 3f;
-
-    [Tooltip("How smoothly the held object follows the hold point.")]
     public float holdSmoothing = 12f;
 
     [Header("Layer Masks")]
-    [Tooltip("Layer that PlaceableObjects are on.")]
     public LayerMask placeableLayer;
-
-    // ------------------------------------------------------------------
-    // Private state
-    // ------------------------------------------------------------------
 
     private PlaceableObject _carriedObject;
     private bool _aimingAtGhost;
     private int _totalPlaceables;
     private int _placedCount;
 
-    // ------------------------------------------------------------------
-    // Unity lifecycle
-    // ------------------------------------------------------------------
-
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
+        if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
         _totalPlaceables = FindObjectsByType<PlaceableObject>(FindObjectsSortMode.None).Length;
     }
@@ -66,7 +42,6 @@ public class PlacementSystem : MonoBehaviour
             MoveHeldObject();
             CheckForGhost();
 
-            // Only F to drop/place, E is reserved for cleaning
             if (Input.GetKeyDown(KeyCode.F))
             {
                 if (_aimingAtGhost)
@@ -88,43 +63,77 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
-    // ------------------------------------------------------------------
-    // Public callbacks
-    // ------------------------------------------------------------------
+    void SetRigWeight(Rig rig, float weight)
+    {
+        if (rig != null) rig.weight = weight;
+    }
 
-    /// <summary>Called by PlaceableObject when picked up.</summary>
+    // Hides whichever tool is active and activates holdPoint rig
+    void OnStartCarrying()
+    {
+        bool mopActive = mopAction != null &&
+                         mopAction.heldMop != null &&
+                         mopAction.heldMop.gameObject.activeSelf;
+
+        bool ragActive = mopAction != null &&
+                         mopAction.HeldRag != null &&
+                         mopAction.HeldRag.gameObject.activeSelf;
+
+        if (mopActive) mopAction.heldMop.gameObject.SetActive(false);
+        if (ragActive) mopAction.HeldRag.gameObject.SetActive(false);
+
+        SetRigWeight(mopRig, 0f);
+        SetRigWeight(ragRig, 0f);
+        SetRigWeight(holdPointRig, 1f);
+    }
+
+    // Restores whichever tool was active before carrying
+    void OnStopCarrying()
+    {
+        SetRigWeight(holdPointRig, 0f);
+
+        if (mopAction == null) return;
+
+        bool mopPickedUp = mopAction.mopPickup;
+        bool ragPickedUp = mopAction.ragPickup;
+
+        // Restore whichever was the last equipped tool
+        // MopPickupAction tracks this via its own state
+        bool mopWasActive = mopPickedUp &&
+                            (mopAction.HeldRag == null || !mopAction.HeldRag.gameObject.activeSelf);
+
+        if (mopWasActive && mopPickedUp)
+        {
+            mopAction.heldMop.gameObject.SetActive(true);
+            SetRigWeight(mopRig, 1f);
+            SetRigWeight(ragRig, 0f);
+        }
+        else if (ragPickedUp)
+        {
+            mopAction.HeldRag.gameObject.SetActive(true);
+            SetRigWeight(ragRig, 1f);
+            SetRigWeight(mopRig, 0f);
+        }
+    }
+
     public void OnObjectPickedUp(PlaceableObject obj)
     {
         HUDController.instance?.EnableInteractionText("Drop");
     }
 
-    /// <summary>Called by PlaceableObject when dropped without placing.</summary>
     public void OnObjectDropped()
     {
         HUDController.instance?.DisableInteractionText();
     }
 
-    /// <summary>Called by PlaceableObject when successfully placed.</summary>
     public void OnObjectPlaced(PlaceableObject obj)
     {
         _placedCount++;
-
-        NotificationSystem.Instance?.ShowNotification(
-            $"Item restored! ({_placedCount}/{_totalPlaceables})");
-
+        NotificationSystem.Instance?.ShowNotification($"Item restored! ({_placedCount}/{_totalPlaceables})");
         HUDController.instance?.DisableInteractionText();
-
-        if (_placedCount >= _totalPlaceables)
-            OnAllObjectsPlaced();
+        if (_placedCount >= _totalPlaceables) OnAllObjectsPlaced();
     }
 
-    // ------------------------------------------------------------------
-    // Private
-    // ------------------------------------------------------------------
-
-    /// <summary>
-    /// Raycast for PlaceableObjects in range and show pickup prompt.
-    /// </summary>
     private void CheckForPickup()
     {
         Ray ray = new Ray(playerCamera.position, playerCamera.forward);
@@ -147,7 +156,6 @@ public class PlacementSystem : MonoBehaviour
         HUDController.instance?.DisableInteractionText();
     }
 
-    /// <summary>Picks up the given object and begins carrying it.</summary>
     private void PickupObject(PlaceableObject placeable)
     {
         PlayerEquipment equipment = FindObjectOfType<PlayerEquipment>();
@@ -157,11 +165,12 @@ public class PlacementSystem : MonoBehaviour
             catch (System.Exception e) { Debug.LogWarning("ForceUnequip failed: " + e.Message); }
         }
 
+        OnStartCarrying();
+
         _carriedObject = placeable;
         _carriedObject.transform.SetParent(holdPoint);
         _carriedObject.OnPickedUp();
 
-        // If it has a MopTool, equip it
         MopTool mop = placeable.GetComponent<MopTool>();
         if (mop != null)
         {
@@ -171,7 +180,6 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
-    /// <summary>Smoothly moves the held object to the hold point.</summary>
     private void MoveHeldObject()
     {
         if (_carriedObject == null) return;
@@ -189,10 +197,6 @@ public class PlacementSystem : MonoBehaviour
         );
     }
 
-    /// <summary>
-    /// Asks the carried object whether the player is aiming at its ghost.
-    /// Updates highlight and HUD accordingly.
-    /// </summary>
     private void CheckForGhost()
     {
         if (_carriedObject.holdOnly)
@@ -209,17 +213,14 @@ public class PlacementSystem : MonoBehaviour
         if (_aimingAtGhost != wasAiming)
         {
             _carriedObject?.SetGhostHighlighted(_aimingAtGhost);
-            HUDController.instance?.EnableInteractionText(
-                _aimingAtGhost ? "Place here" : "Drop");
+            HUDController.instance?.EnableInteractionText(_aimingAtGhost ? "Place here" : "Drop");
         }
     }
 
-    /// <summary>Drops the carried object without restoring it.</summary>
     private void DropObject()
     {
         if (_carriedObject == null) return;
 
-        // If it has a MopTool, unequip it
         MopTool mop = _carriedObject.GetComponent<MopTool>();
         if (mop != null)
         {
@@ -232,9 +233,10 @@ public class PlacementSystem : MonoBehaviour
         _carriedObject.OnDropped();
         _carriedObject = null;
         _aimingAtGhost = false;
+
+        OnStopCarrying();
     }
 
-    /// <summary>Places the carried object at its correct position.</summary>
     private void PlaceObject()
     {
         if (_carriedObject == null) return;
@@ -242,12 +244,12 @@ public class PlacementSystem : MonoBehaviour
         _carriedObject.OnPlaced();
         _carriedObject = null;
         _aimingAtGhost = false;
+
+        OnStopCarrying();
     }
 
-    /// <summary>All objects restored — fire completion notification.</summary>
     private void OnAllObjectsPlaced()
     {
         NotificationSystem.Instance?.ShowNotification("All items restored! Level complete!");
-        // TODO: load next scene or trigger cutscene here
     }
 }
