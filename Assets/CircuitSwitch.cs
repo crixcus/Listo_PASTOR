@@ -1,10 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CircuitSwitch : MonoBehaviour
 {
     public Animator animator;
 
     public float interactDistance = 2f;
+
+    public AudioSource audioSource; // audio
 
     private Transform player;
     private bool canUse = true;
@@ -31,7 +33,12 @@ public class CircuitSwitch : MonoBehaviour
     {
         canUse = false;
 
+        audioSource.Play(); // play sound
+
         animator.SetTrigger("OFF");
+
+        // Notification trigger
+        NotificationSystem.TriggerObjectiveComplete("Circuit Breaker OFF");
 
         Invoke(nameof(ResetSwitch), 1f); // time of animation
     }
