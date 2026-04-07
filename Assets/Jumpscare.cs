@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +26,7 @@ public class JumpScare : MonoBehaviour
     public int chance = 3;
 
     private bool _hasRolled = false;
+    public HintsScript hints;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -37,5 +39,7 @@ public class JumpScare : MonoBehaviour
 
         audioSource?.Play();
         TraumaBar.Instance?.AddTrauma(traumaAmount);
+
+        hints.Hint1Show();
     }
 }

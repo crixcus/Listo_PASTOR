@@ -60,6 +60,7 @@ public class PausePanel : MonoBehaviour
                 //LockCursor();
                 //ResumeGame();
             }
+
             else
             {
                 PauseGame();

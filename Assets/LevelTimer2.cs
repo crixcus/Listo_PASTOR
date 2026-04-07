@@ -10,13 +10,19 @@ public class LevelTimer2 : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(ActivateAfterDelay());
+        if (!csTrigger.activeInHierarchy)
+            StartCoroutine(ActivateAfterDelay());
     }
 
     IEnumerator ActivateAfterDelay()
     {
         yield return new WaitForSeconds(delay);
 
+        csTrigger.SetActive(true);
+    }
+
+    public void ActivateEarly()
+    {
         csTrigger.SetActive(true);
     }
 }

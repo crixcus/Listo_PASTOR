@@ -25,6 +25,8 @@ using TMPro;
 public class StackProgressUI : MonoBehaviour
 {
     public static StackProgressUI Instance { get; private set; }
+    public HintsScript hints;
+    public LevelTimer2 lvl2Trigger;
 
     [Header("Ring")]
     [Tooltip("Filled Image for the progress ring. " +
@@ -136,6 +138,11 @@ public class StackProgressUI : MonoBehaviour
             hintText.text = remaining <= 0
                 ? "All items safe!"
                 : $"{remaining} more to safety";
+            if (remaining <= 0)
+            {
+                StartCoroutine(FloodRise());
+            }
+            
         }
 
         // Dots — fill left to right as items are saved
@@ -208,5 +215,13 @@ public class StackProgressUI : MonoBehaviour
 
         _canvasGroup.alpha = target;
         _fadeCoroutine = null;
+    }
+
+    IEnumerator FloodRise()
+    {
+        Debug.Log("Waiting");
+        yield return new WaitForSeconds(2f);
+        hints.Hint2Show();
+        lvl2Trigger.ActivateEarly();
     }
 }

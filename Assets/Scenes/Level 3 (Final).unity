@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44806176, g: 0.49807, b: 0.57552516, a: 1}
+  m_IndirectSpecularColor: {r: 0.44806212, g: 0.49807066, b: 0.5755263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -63743,7 +63743,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &851926841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64067,8 +64067,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instPanel1: {fileID: 1379597932}
   instPanel2: {fileID: 851373960}
-  instPanel3: {fileID: 851373960}
-  playerHolder: {fileID: 0}
+  instPanel3: {fileID: 833306117}
+  playerHolder: {fileID: 804889952}
 --- !u!1 &873457327
 GameObject:
   m_ObjectHideFlags: 0
@@ -65494,15 +65494,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1031614021}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.653135, y: 3.539044, z: 3.539044}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000055225064}
+  m_LocalScale: {x: 4.7829313, y: 3.474862, z: 3.539044}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2012443735}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -553, y: -295}
+  m_AnchoredPosition: {x: -508.00006, y: -291}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1031614023
@@ -66924,9 +66924,6 @@ PrefabInstance:
     - {fileID: 1112741920628746003, guid: df0f636a2cf9f4d45949b3a44e936b4d, type: 3}
     - {fileID: 4321677916712439850, guid: df0f636a2cf9f4d45949b3a44e936b4d, type: 3}
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6832198450023560598, guid: df0f636a2cf9f4d45949b3a44e936b4d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1403404501}
     - targetCorrespondingSourceObject: {fileID: 6832198450023560598, guid: df0f636a2cf9f4d45949b3a44e936b4d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1182781548}
@@ -69719,81 +69716,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 242806540}
   m_LocalEulerAnglesHint: {x: -28.54, y: 49.843, z: -72.611}
---- !u!1 &1403404500
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1403404501}
-  - component: {fileID: 1403404503}
-  - component: {fileID: 1403404502}
-  m_Layer: 5
-  m_Name: BG (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1403404501
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403404500}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.0000034302}
-  m_LocalScale: {x: 0.4713925, y: 0.7427912, z: 0.43402314}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1139282788}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.5, y: -8.1}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1403404502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403404500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90ab3d4eeabd784478b270ce3c653bb2, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1403404503
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403404500}
-  m_CullTransparentMesh: 1
 --- !u!1 &1406037747 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4643142854487033675, guid: fea8c5609a5671e458dbc356442d5d0b, type: 3}
@@ -70117,7 +70039,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1453068125}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000040733546}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000144915175}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -70125,7 +70047,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 175, y: 85}
+  m_AnchoredPosition: {x: 314.99994, y: 15}
   m_SizeDelta: {x: 207.41, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1453068127
@@ -70148,8 +70070,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Look for the mop so you can clean the furnitures before you arrange them
-    back to how they were before! Make sure you rinse it once in a while!
+  m_text: Look for the mop and rag so you can clean the house! Don't forget to rinse
+    both tools to keep it functional!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4fd1e20dacdb59d449c4195660a24881, type: 2}
   m_sharedMaterial: {fileID: -7961467234579709192, guid: 4fd1e20dacdb59d449c4195660a24881, type: 2}
@@ -70212,7 +70134,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -320.3224, y: 0, z: -317.8975, w: 0}
+  m_margin: {x: -422.1899, y: 0, z: -420.98108, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -70991,7 +70913,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Make sure to refill your stamina by eating! Health is wealth! '
+  m_text: Make sure to refill your stamina by eating! Health is wealth! Hold [F]
+    near food to consume!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4fd1e20dacdb59d449c4195660a24881, type: 2}
   m_sharedMaterial: {fileID: -7961467234579709192, guid: 4fd1e20dacdb59d449c4195660a24881, type: 2}
@@ -72026,7 +71949,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 866043295}
         m_TargetAssemblyTypeName: InstructionsPanel, Assembly-CSharp
-        m_MethodName: Play
+        m_MethodName: NextPanel2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -74444,14 +74367,14 @@ RectTransform:
   m_GameObject: {fileID: 1892980628}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.653135, y: 3.539044, z: 3.539044}
+  m_LocalScale: {x: 4.7829313, y: 3.474862, z: 3.539044}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2012443735}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -553, y: 85}
+  m_AnchoredPosition: {x: -508, y: 88.99998}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1892980630
@@ -74474,7 +74397,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bd3f91c1dd743c641b675687d13590a6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 73ea1046fad9a52479cb9a8123bdecbb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
