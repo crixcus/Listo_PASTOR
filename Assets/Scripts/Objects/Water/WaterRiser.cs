@@ -6,14 +6,17 @@ public class WaterRiser : MonoBehaviour
     public float floodDuration = 60f;
     public float maxHeight = 10f;
 
+    [Header("Second Rise (after stacking complete)")]
+    public float secondMaxHeight = 16f;
+
     [Header("Notification Settings")]
     public float notificationInterval = 10f;
     public float warningHeightThreshold = 2f;
 
     [Header("Pause Settings")]
-    public float pauseInterval = 30f;        // how often a pause occurs (seconds of rising time)
-    public float pauseMinDuration = 5f;      // minimum pause length
-    public float pauseMaxDuration = 10f;     // maximum pause length
+    public float pauseInterval = 30f;
+    public float pauseMinDuration = 5f;
+    public float pauseMaxDuration = 10f;
 
     public static event System.Action OnFloodComplete;
 
@@ -23,70 +26,101 @@ public class WaterRiser : MonoBehaviour
     private bool _hasStartedRising;
     private bool _hasCompleted;
 
-    // Pause state
     private bool _isPaused;
     private float _pauseTimer;
     private float _pauseDuration;
-    private float _risingTimeAccumulator;    // tracks elapsed rising time (excludes pauses)
+    private float _risingTimeAccumulator;
+
+    // Second rise state
+    private bool _stackingDone = false;
+    private bool _secondRiseComplete = false;
 
     private void Start()
     {
         _startY = transform.position.y;
         _riseSpeed = (maxHeight - _startY) / floodDuration;
+
+        StackProgressUI.OnStackingComplete += OnStackingComplete;
+    }
+
+    private void OnDestroy()
+    {
+        StackProgressUI.OnStackingComplete -= OnStackingComplete;
+    }
+
+    private void OnStackingComplete()
+    {
+        _stackingDone = true;
+        Debug.Log("Stacking complete! Water will now rise to second max height.");
     }
 
     private void Update()
     {
-        if (_hasCompleted) return;
-
-        // --- Handle active pause ---
-        if (_isPaused)
+        // --- First rise: up to maxHeight ---
+        if (!_hasCompleted)
         {
-            _pauseTimer += Time.deltaTime;
-            if (_pauseTimer >= _pauseDuration)
+            if (_isPaused)
             {
-                _isPaused = false;
-                _pauseTimer = 0f;
-                Debug.Log("Flood resumes rising.");
-            }
-            return; // skip rising while paused
-        }
-
-        if (transform.position.y < maxHeight)
-        {
-            // Accumulate rising time and check if it's time to pause
-            _risingTimeAccumulator += Time.deltaTime;
-            if (_risingTimeAccumulator >= pauseInterval)
-            {
-                _risingTimeAccumulator = 0f;
-                _isPaused = true;
-                _pauseDuration = Random.Range(pauseMinDuration, pauseMaxDuration);
-                Debug.Log($"Flood pausing for {_pauseDuration:F1} seconds.");
+                _pauseTimer += Time.deltaTime;
+                if (_pauseTimer >= _pauseDuration)
+                {
+                    _isPaused = false;
+                    _pauseTimer = 0f;
+                    Debug.Log("Flood resumes rising.");
+                }
                 return;
             }
 
-            // Rise as normal
-            transform.position += Vector3.up * _riseSpeed * Time.deltaTime;
-
-            if (!_hasStartedRising)
+            if (transform.position.y < maxHeight)
             {
-                _hasStartedRising = true;
-                NotificationSystem.TriggerFloodRising();
-            }
-
-            if (transform.position.y >= _startY + warningHeightThreshold)
-            {
-                if (Time.time - _lastNotificationTime >= notificationInterval)
+                _risingTimeAccumulator += Time.deltaTime;
+                if (_risingTimeAccumulator >= pauseInterval)
                 {
+                    _risingTimeAccumulator = 0f;
+                    _isPaused = true;
+                    _pauseDuration = Random.Range(pauseMinDuration, pauseMaxDuration);
+                    Debug.Log($"Flood pausing for {_pauseDuration:F1} seconds.");
+                    return;
+                }
+
+                transform.position += Vector3.up * _riseSpeed * Time.deltaTime;
+
+                if (!_hasStartedRising)
+                {
+                    _hasStartedRising = true;
                     NotificationSystem.TriggerFloodRising();
-                    _lastNotificationTime = Time.time;
+                }
+
+                if (transform.position.y >= _startY + warningHeightThreshold)
+                {
+                    if (Time.time - _lastNotificationTime >= notificationInterval)
+                    {
+                        NotificationSystem.TriggerFloodRising();
+                        _lastNotificationTime = Time.time;
+                    }
                 }
             }
+            else
+            {
+                // Reached first ceiling — wait here for stacking
+                _hasCompleted = true;
+                OnFloodComplete?.Invoke();
+                Debug.Log("Water reached max height. Waiting for stacking...");
+            }
         }
-        else
+
+        // --- Second rise: only after stacking is done ---
+        if (_hasCompleted && _stackingDone && !_secondRiseComplete)
         {
-            _hasCompleted = true;
-            OnFloodComplete?.Invoke();
+            if (transform.position.y < secondMaxHeight)
+            {
+                transform.position += Vector3.up * _riseSpeed * Time.deltaTime;
+            }
+            else
+            {
+                _secondRiseComplete = true;
+                Debug.Log("Water reached second max height. Done.");
+            }
         }
     }
 }

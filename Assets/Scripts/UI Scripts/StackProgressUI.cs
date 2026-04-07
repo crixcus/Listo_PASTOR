@@ -67,6 +67,7 @@ public class StackProgressUI : MonoBehaviour
     [Tooltip("How fast the UI fades in and out.")]
     public float fadeSpeed = 2f;
 
+    public static event System.Action OnStackingComplete;
     // ------------------------------------------------------------------
     // Private state
     // ------------------------------------------------------------------
@@ -222,5 +223,6 @@ public class StackProgressUI : MonoBehaviour
         yield return new WaitForSeconds(2f);
         hints.Hint2Show();
         lvl2Trigger.ActivateEarly();
+        OnStackingComplete?.Invoke();
     }
 }
