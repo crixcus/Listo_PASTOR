@@ -142,7 +142,6 @@ public class StackProgressUI : MonoBehaviour
             {
                 StartCoroutine(FloodRise());
             }
-            
         }
 
         // Dots — fill left to right as items are saved
