@@ -29,6 +29,8 @@ using TMPro;
 public class ItemProgressUI : MonoBehaviour
 {
     public static ItemProgressUI Instance { get; private set; }
+    public HintsScript hints1;
+    public sceneTrigger lvl1Trigger;
 
     [Header("Ring")]
     [Tooltip("Filled Image for the progress ring. " +
@@ -194,6 +196,10 @@ public class ItemProgressUI : MonoBehaviour
             hintText.text = remaining <= 0
                 ? "All items collected!"
                 : $"{remaining} more to go";
+            if (remaining <= 0)
+            {
+                StartCoroutine(LastTask());
+            }
         }
 
         // Dots — fill left to right as items are collected
@@ -245,5 +251,13 @@ public class ItemProgressUI : MonoBehaviour
 
         _canvasGroup.alpha = target;
         _fadeCoroutine = null;
+    }
+
+    IEnumerator LastTask()
+    {
+        Debug.Log("Waiting");
+        yield return new WaitForSeconds(2f);
+        hints1.Hint1Show();
+        lvl1Trigger.StartEarly();
     }
 }

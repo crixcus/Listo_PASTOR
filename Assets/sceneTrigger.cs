@@ -27,8 +27,11 @@ public class sceneTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             timelineObject.SetActive(true);
-        }
+        }  
+    }
 
-        
+    public void StartEarly()
+    {
+        trigger.SetActive(true);
     }
 }
