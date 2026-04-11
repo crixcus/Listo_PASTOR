@@ -23,6 +23,8 @@ public class sceneTrigger2 : MonoBehaviour
     {
         yield return new WaitForSeconds(10f);
         player.SetActive(true);
-        SceneManager.LoadScene("Level 2");
+        //SceneManager.LoadScene("Level 2");
+
+        LevelManager.Instance.LoadScene("Level 2", "polskrin mo");
     }
 }

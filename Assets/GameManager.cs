@@ -13,25 +13,40 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         SceneManager.LoadSceneAsync((int)SceneIndexes.MainMenu, LoadSceneMode.Additive);
     }
 
     List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
 
-    public void LoadGame()
+    public void LoadGame(string targetScene)
     {
         loadScreen.SetActive(true);
+        scenesLoading.Clear();
 
-        scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.MainMenu));
-        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.Level1, LoadSceneMode.Additive));
-        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.Level2, LoadSceneMode.Additive));
-        scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.Level3, LoadSceneMode.Additive));
+        Scene currentScene = SceneManager.GetActiveScene();
+        if (currentScene.name != "LoadingScene")
+        {
+            scenesLoading.Add(SceneManager.UnloadSceneAsync(currentScene.name));
+        }
+
+        scenesLoading.Add(SceneManager.LoadSceneAsync(targetScene, LoadSceneMode.Additive));
+
+        StartCoroutine(GetSceneLoadProgress(targetScene));
     }
 
     float totalSceneProgress;
-    public IEnumerator GetSceneLoadProgress()
+    public IEnumerator GetSceneLoadProgress(string targetScene)
     {
         for (int i = 0; i < scenesLoading.Count; i++)
         {
@@ -51,6 +66,7 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(targetScene));
 
         loadScreen.SetActive(false);
     }

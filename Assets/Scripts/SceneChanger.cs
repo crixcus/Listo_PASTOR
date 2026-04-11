@@ -38,7 +38,9 @@ public class SceneChanger : MonoBehaviour
 
         // Make sure the scene is added to your Build Settings!
         Debug.Log($"Loading scene: {nextSceneName}...");
-        SceneManager.LoadScene(nextSceneName);
+        //SceneManager.LoadScene(nextSceneName);
+
+        LevelManager.Instance.LoadScene(nextSceneName, "polskrin mo");
     }
 
     /// <summary>

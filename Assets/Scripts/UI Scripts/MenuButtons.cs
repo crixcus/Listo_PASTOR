@@ -78,7 +78,10 @@ public class MenuButtons : MonoBehaviour
 
     public void PlayEpisode()
     {
+        //GameManager.Instance.LoadGame(playSceneName);
         // Mag-load kan next scene (main game)
-        SceneManager.LoadScene(playSceneName);
+        //SceneManager.LoadScene(playSceneName);
+
+        LevelManager.Instance.LoadScene(playSceneName, "polskrin mo");
     }
 }
