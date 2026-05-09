@@ -6,12 +6,15 @@ public class sceneTrigger : MonoBehaviour
 {
     public GameObject timelineObject;
     public GameObject trigger;
+    public BoxCollider box;
+
     public float timer = 300f;
     public GameObject player;
 
     public void Start()
     {
         trigger.SetActive(false);
+        box.enabled = true;
     }
 
     public void Update()
@@ -27,7 +30,8 @@ public class sceneTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             timelineObject.SetActive(true);
-        }  
+            box.enabled = false;
+        }
     }
 
     public void StartEarly()

@@ -7,6 +7,7 @@ using System.Linq;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
+    public ShaderVariantCollection shaderCollection;
 
     public Slider progressBar;
     public GameObject transitionsContainer;
@@ -39,6 +40,9 @@ public class LevelManager : MonoBehaviour
     private IEnumerator LoadSceneAsync(string sceneName, string transitionName)
     {
         SceneTransition transition = transitions.First(t => t.name == transitionName);
+
+        shaderCollection?.WarmUp();
+        yield return null; // wait one frame for warmup
 
         // Start transition in first
         yield return transition.AnimateTransitionIn();
