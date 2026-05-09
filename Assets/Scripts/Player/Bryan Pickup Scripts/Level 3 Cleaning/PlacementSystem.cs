@@ -158,7 +158,7 @@ public class PlacementSystem : MonoBehaviour
 
     private void PickupObject(PlaceableObject placeable)
     {
-        PlayerEquipment equipment = FindObjectOfType<PlayerEquipment>();
+        PlayerEquipment equipment = Object.FindFirstObjectByType<PlayerEquipment>();
         if (equipment != null)
         {
             try { equipment.ForceUnequip(); }
@@ -174,7 +174,7 @@ public class PlacementSystem : MonoBehaviour
         MopTool mop = placeable.GetComponent<MopTool>();
         if (mop != null)
         {
-            PlayerCleaning playerCleaning = FindObjectOfType<PlayerCleaning>();
+            PlayerCleaning playerCleaning = Object.FindFirstObjectByType<PlayerCleaning>();
             if (playerCleaning != null)
                 playerCleaning.EquipMop(mop);
         }
@@ -224,7 +224,7 @@ public class PlacementSystem : MonoBehaviour
         MopTool mop = _carriedObject.GetComponent<MopTool>();
         if (mop != null)
         {
-            PlayerCleaning playerCleaning = FindObjectOfType<PlayerCleaning>();
+            PlayerCleaning playerCleaning = Object.FindFirstObjectByType<PlayerCleaning>();
             if (playerCleaning != null)
                 playerCleaning.EquipMop(null);
         }

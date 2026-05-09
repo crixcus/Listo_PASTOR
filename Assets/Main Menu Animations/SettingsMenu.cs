@@ -30,7 +30,7 @@ public class SettingsMenu : MonoBehaviour
         audioMixer.SetFloat("MusicVolume", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("MusicVolume", volume);
 
-        var tenkoku = FindObjectOfType<Tenkoku.Core.TenkokuModule>();
+        var tenkoku = Object.FindFirstObjectByType<Tenkoku.Core.TenkokuModule>();
         if (tenkoku != null)
             tenkoku.overallVolume = volume;
     }
@@ -40,7 +40,7 @@ public class SettingsMenu : MonoBehaviour
         audioMixer.SetFloat("SFXVolume", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("SFXVolume", volume);
 
-        var tenkoku = FindObjectOfType<Tenkoku.Core.TenkokuModule>();
+        var tenkoku = Object.FindFirstObjectByType<Tenkoku.Core.TenkokuModule>();
         if (tenkoku != null)
         {
             tenkoku.overallVolume = volume;        // master — controls everything
@@ -73,7 +73,7 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < resolutions.Length; i++)
         {
             string option = resolutions[i].width + " x " + resolutions[i].height
-                          + " @ " + resolutions[i].refreshRate + "Hz";
+                          + " @ " + resolutions[i].refreshRateRatio.value + "Hz";
             options.Add(option);
         }
 
